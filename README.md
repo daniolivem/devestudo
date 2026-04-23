@@ -150,9 +150,9 @@ Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.d
 ### Usuário
 
 - `id`
-- `nome`
+- `name`
 - `email`
-- `senha`
+- `password`
 - `role`
 
 ### Fórum
@@ -285,9 +285,9 @@ POST /register
 **Body:**
 ```json
 {
-  "nome": "João Silva",
+  "name": "João Silva",
   "email": "joao@email.com",
-  "senha": "123456",
+  "password": "123456",
   "role": "STUDENT"
 }
 ```
@@ -298,7 +298,7 @@ POST /register
   "success": true,
   "data": {
     "id": 1,
-    "nome": "João Silva",
+    "name": "João Silva",
     "email": "joao@email.com",
     "role": "STUDENT"
   }
@@ -354,7 +354,7 @@ Reprova nos testes se:
 - **Mentoring**
 - **Group** (limitar há 10 participantes por grupo, sem
 incluir o mentor)
-- **GrupoMembros** (listagem de membros e opções de gerenciamento dos mesmos)
+- **MembersGroup** (listagem de membros e opções de gerenciamento dos mesmos)
 
 #### USER
 
@@ -377,8 +377,8 @@ Deve obrigatoriamente:
 Rotas:
 
 - **GET** /mentors
-- **POST** /mentoria
-- **POST** /avaliar
+- **POST** /mentoring
+- **POST** /toevaluate
 
 #### GRUPOS
 
@@ -393,7 +393,7 @@ Rotas:
 
 Regras obrigatórias:
 
-- Entrada = PENDENTE
+- Entrada = PENDING 
 - Apenas mentor aprova/remove
 
 #### Testes obrigatórios
@@ -414,7 +414,7 @@ Reprova nos testes se:
 #### Models
 
 - **Thread**
-- **Resposta**
+- **Reply**
 
 #### Rotas
 
@@ -493,8 +493,8 @@ Integração obrigatória:
 
 - **/threads**
 - **/reply**
-- **/mentoria**
-- **/avaliar**
+- **/mentoring**
+- **/toevaluate**
 
 Reprova nos testes se:
 
