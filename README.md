@@ -99,6 +99,33 @@ npm install
 npm run dev
 ```
 
+### Instalando o Vite
+
+Para instalar o Vite, siga os passos abaixo:
+
+1. Certifique-se de que o Node.js está instalado no seu sistema. Você pode baixá-lo no [site oficial do Node.js](https://nodejs.org/).
+2. Execute o seguinte comando para criar um novo projeto com o Vite:
+
+   ```bash
+   npm create vite@latest
+   ```
+
+3. Siga as instruções no terminal para configurar o projeto. Escolha o framework e as opções desejadas.
+4. Navegue até o diretório do projeto e instale as dependências:
+
+   ```bash
+   cd nome-do-projeto
+   npm install
+   ```
+
+5. Inicie o servidor de desenvolvimento:
+
+   ```bash
+   npm run dev
+   ```
+
+Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.dev/).
+
 ---
 
 ## Autenticação (OBRIGATÓRIO)
