@@ -130,9 +130,18 @@ Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.d
 
 ## Autenticação (OBRIGATÓRIO)
 
-- **Usar JWT**
-- **Login deve retornar token**
-- **Rotas protegidas devem validar token**
+- Usar **JWT**
+- Login deve retornar token
+- Rotas protegidas devem validar token
+
+### Regras obrigatórias:
+
+- Token deve conter:
+  - `id` do usuário
+  - `role` do usuário
+- Implementar middleware de autenticação
+- Implementar middleware de autorização por role (RBAC)
+- Todas as rotas (exceto login/register) devem ser protegidas
 
 ---
 
@@ -150,12 +159,27 @@ Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.d
 
 - **Usuário** → **Thread** (1:N)
 - **Thread** → **Resposta** (1:N)
+- **Resposta** possui campo `votes` para contagem de votos
+
+
+#### Regras obrigatórias:
+
+- Thread deve possuir autor válido (`userId`)
+- Resposta deve obrigatoriamente estar vinculada a uma thread existente
+- Não permitir respostas órfãs
+
+#### Sistema de votos (OBRIGATÓRIO):
+
+- Votos são aplicados em respostas
+- Cada resposta possui contagem de votos 
+- Deve impedir múltiplos votos indevidos pelo mesmo usuário
+
 
 #### Resposta deve conter:
 
 - `userId`
 - `threadId`
-- `votos`
+- `content`
 
 ### Grupos
 
@@ -163,15 +187,30 @@ Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.d
 - **GrupoMembros** com:
   - `userId`
   - `grupoId`
-  - `status` (PENDENTE, APROVADO)
+  - `status` (PENDING, APPROVED)
+
+#### Regras obrigatórias:
+
+- Entrada no grupo = **PENDING**
+- Apenas o **mentor do grupo** pode aprovar ou remover membros
+- Máximo de **10 membros com status APPROVED por grupo**
+- Mentor **não conta como membro**
+- Usuário não pode entrar duas vezes no mesmo grupo
+- Deve validar existência do grupo antes de qualquer ação
 
 ### Mentoria
 
 - **mentorId**
-- **alunoId**
-- **status** (SOLICITADA, CONCLUIDA)
-- **nota** (opcional)
+- **studentId**
+- **status** (REQUESTED, APPROVED, COMPLETED, CANCELLED)
+- **nota** (opcional, 1 a 5)
 - **comentário** (opcional)
+
+#### Regras obrigatórias:
+
+- Apenas usuários com role **STUDENT** podem solicitar mentoria
+- Apenas usuários envolvidos podem avaliar
+- Nota deve ser validada (intervalo permitido)
 
 ---
 
@@ -183,14 +222,14 @@ Pode:
 
 - Criar, editar e deletar próprios tópicos
 - Responder tópicos
-- Entrar em grupos
+- Solicitar entrada em grupos
 - Sair de grupos
 - Deletar própria conta
 
 ### MENTOR
 
 Pode:
-
+- Usar todas as funcionalidades de aluno
 - Criar e gerenciar grupos
 - Aprovar usuários
 - Remover usuários
@@ -200,6 +239,11 @@ Pode:
 
 - Controle total do sistema
 
+### Regras gerais de acesso:
+
+- Todas as ações devem validar o `userId` autenticado
+- Usuário só pode alterar/deletar seus próprios dados
+- Ações sensíveis devem validar role (ex: apenas mentor gerencia grupo)
 ---
 
 ## Padrão de Resposta da API
@@ -222,7 +266,7 @@ Pode:
 
 - Email válido
 - Senha mínimo 6 caracteres
-- Campos obrigatórios
+- Todos os campos obrigatórios
 - Email único
 
 ---
@@ -244,7 +288,7 @@ POST /register
   "nome": "João Silva",
   "email": "joao@email.com",
   "senha": "123456",
-  "role": "ALUNO"
+  "role": "STUDENT"
 }
 ```
 
@@ -256,11 +300,22 @@ POST /register
     "id": 1,
     "nome": "João Silva",
     "email": "joao@email.com",
-    "role": "ALUNO"
+    "role": "STUDENT"
   }
 }
 ```
 
+## Validações obrigatórias do Backend
+
+O sistema será considerado inválido se:
+
+- Rotas não estiverem protegidas com JWT
+- Senhas devem ser obrigatoriamente criptografadas com bcrypt
+- Controle de acesso por role não estiver implementado
+- Limite de grupo (10 membros) não for respeitado
+- Sistema de votos não impedir duplicidade
+- Respostas não estiverem vinculadas corretamente às threads
+- Regras de negócio não forem validadas
 ---
 
 ## 👥 Divisão da Equipe
@@ -270,10 +325,10 @@ POST /register
 Deve fazer:
 
 - Setup do projeto
-- Configurar Prisma + banco
-- Organizar estrutura
+- Configurar Prisma (setup inicial e schema) + banco
+- Organizar estrutura de pastas
 - Integrar frontend + backend
-- Revisar PRs
+- Revisar PRs do banckend 
 - Revisar models
 - Rodar migrations finais
 - Testar sistema completo
@@ -285,6 +340,7 @@ Entregável obrigatório:
 Reprova nos testes se:
 
 - Integração não funciona
+- Banco não mantem refistros
 - Backend não conecta
 - Sistema não roda
 
@@ -294,10 +350,11 @@ Reprova nos testes se:
 
 #### Models obrigatórios
 
-- **User**
-- **Mentoria**
-- **Grupo**
-- **GrupoMembros**
+- **User** (student, mentor e admin)
+- **Mentoring**
+- **Group** (limitar há 10 participantes por grupo, sem
+incluir o mentor)
+- **GrupoMembros** (listagem de membros e opções de gerenciamento dos mesmos)
 
 #### USER
 
@@ -371,7 +428,7 @@ Deve:
 
 - Criar threads
 - Criar respostas
-- Implementar votos
+- Implementar votos nas respostas
 
 #### Testes obrigatórios
 
