@@ -531,7 +531,7 @@ Reprova nos testes se:
 ## Git
 
 - Não fazer commit na main
-- Criar branch para cada funcionalidade
+- Criar branch para cada funcionalidade (se possível)
 - Abrir PR após terminar a funcionalidade
 - Avisar no grupo para revisão
 - Outro membro revisa e aprova (ou solicita mudanças)
