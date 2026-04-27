@@ -1,28 +1,26 @@
 import React from 'react';
-import styles from './Forum.module.css'; // Isso conecta o CSS ao seu código
+import styles from './Forum.module.css';
 
 export function ForumCard({ thread, userRole, onReply, onDelete }) {
   return (
     <div className={styles.card}>
-      <header>
-        <span className={styles.tag}>{thread.category}</span>
-        <h3 className={styles.title}>{thread.title}</h3>
-      </header>
+      <div className={styles.cardHeader}>
+        <span className={styles.categoryTag}>{thread.category}</span>
+        <span className={styles.date}>{thread.date}</span>
+      </div>
+      
+      <h3 className={styles.title}>{thread.title}</h3>
+      <p className={styles.author}>Postado por: <strong>{thread.author}</strong></p>
       
       <p className={styles.content}>{thread.content}</p>
 
-      <div>
-        {/* Lógica para Alunos e Mentores */}
-        {(userRole === 'STUDENT' || userRole === 'MENTOR') && (
-          <button onClick={() => onReply(thread.id)} className={styles.btnReply}>
-            Responder
-          </button>
-        )}
-
-        {/* Lógica exclusiva para o Administrador */}
+      <div className={styles.actions}>
+        <button onClick={() => onReply(thread.id)} className={styles.btnReply}>
+          💬 Responder
+        </button>
         {userRole === 'ADMIN' && (
           <button onClick={() => onDelete(thread.id)} className={styles.btnDelete}>
-            Excluir Tópico
+            🗑️ Excluir
           </button>
         )}
       </div>

@@ -1,42 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { MentoriaCard } from '../components/Forum/MentoriaCard';
 import { currentUser } from '../utils/userMock';
+import styles from './Mentoria.module.css';
 
 export default function Mentoria() {
   const [mentors, setMentors] = useState([]);
   const [userRole] = useState(currentUser.role);
 
   useEffect(() => {
-    // Simulação de dados (Mock)
+    // Dados simulando o banco de dados do Projeto DevEstudo
     const mockMentors = [
-      { id: 1, name: 'Ana Paula', specialty: 'React & UX', bio: 'Ajudo a transformar designs do Figma em código limpo.' },
-      { id: 2, name: 'Carlos Eduardo', specialty: 'Node.js & Prisma', bio: 'Especialista em arquitetura de microsserviços e bancos de dados.' }
+      { 
+        id: 1, 
+        name: 'Daniely Mélo', 
+        specialty: 'React & Arquitetura', 
+        bio: 'Especialista em desenvolvimento frontend e padrões de projeto.',
+        availability: 'Segunda e Quarta'
+      },
+      { 
+        id: 2, 
+        name: 'Antonio Nivaldo', 
+        specialty: 'Node.js & MySQL', 
+        bio: 'Focado em infraestrutura de banco de dados e lógica de backend.',
+        availability: 'Terça e Quinta'
+      },
+      { 
+        id: 3, 
+        name: 'Lucas Silveira', 
+        specialty: 'UI/UX Design', 
+        bio: 'Auxilio na prototipação e experiência do usuário no Figma.',
+        availability: 'Sexta-feira'
+      }
     ];
     setMentors(mockMentors);
   }, []);
 
-  const handleRequest = (id) => alert(`Solicitação enviada ao mentor #${id}`);
-  const handleEvaluate = (id) => alert(`Abrindo formulário de avaliação para mentor #${id}`);
-
   return (
-    <div style={{ padding: '2rem', backgroundColor: '#f9fafb', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-      <header style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Centro de Mentoria</h1>
-        <p style={{ color: '#666' }}>Olá, {currentUser.name}. Seu acesso: <strong>{userRole}</strong></p>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Centro de Mentoria</h1>
+        <p className={styles.subtitle}>Conecte-se com mentores da comunidade <strong>DevEstudo</strong>.</p>
       </header>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-        gap: '1.5rem' 
-      }}>
+      <div className={styles.grid}>
         {mentors.map(mentor => (
           <MentoriaCard 
             key={mentor.id} 
             mentor={mentor} 
             userRole={userRole}
-            onAction={handleRequest}
-            onEvaluate={handleEvaluate}
+            onAction={(id) => alert(`Solicitação enviada para o mentor #${id}`)}
           />
         ))}
       </div>
