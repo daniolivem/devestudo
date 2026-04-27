@@ -1,68 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ForumCard } from '../components/Forum/ForumCard';
+import { currentUser } from '../utils/userMock';
 
 export default function Forum() {
-  // Estado para controlar se o modal de criar tópico está aberto ou fechado
-  const [modalAberto, setModalAberto] = useState(false);
+  // HOOKS: Gerenciando a lista de tópicos e o papel do usuário
+  const [threads, setThreads] = useState([]);
+  const [userRole] = useState(currentUser.role);
+
+  // useEffect: Simula a busca de dados quando a página carrega
+  useEffect(() => {
+    // Dados fictícios que serão substituídos pela API do Backend futuramente
+    const mockThreads = [
+      { 
+        id: 1, 
+        title: 'Dúvida sobre autenticação com Prisma', 
+        content: 'Como posso validar o cargo do usuário no momento do login?', 
+        category: 'Backend' 
+      },
+      { 
+        id: 2, 
+        title: 'Estilização com CSS Modules', 
+        content: 'É melhor usar camelCase ou kebab-case nos nomes das classes?', 
+        category: 'Frontend' 
+      },
+      { 
+        id: 3, 
+        title: 'Regras do Projeto Integrador', 
+        content: 'Lembrete: todos os componentes devem ser reutilizáveis.', 
+        category: 'Geral' 
+      }
+    ];
+    
+    setThreads(mockThreads);
+  }, []);
+
+  // Funções de Ação (Handlers)
+  const handleReply = (id) => {
+    alert(`Usuário ${currentUser.name} (${userRole}) clicou para responder ao tópico #${id}`);
+  };
+
+  const handleDelete = (id) => {
+    if (userRole === 'ADMIN') {
+      const filteredThreads = threads.filter(thread => thread.id !== id);
+      setThreads(filteredThreads);
+      alert('Tópico excluído com sucesso pelo Administrador.');
+    } else {
+      alert('Ação negada: Você não tem permissão para excluir.');
+    }
+  };
 
   return (
-    /* bg-[#F3F4F6] é um exemplo de cor de fundo do Figma. 
-       Troque pelo código hexadecimal real que encontrar no Figma! */
-    <div className="min-h-screen bg-[#F3F4F6] p-8 font-sans">
-      
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-black">Fórum Temático</h1>
-        <button 
-          onClick={() => setModalAberto(true)}
-          className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition"
-        >
-          + Criar Novo Tópico
-        </button>
+    <div style={{ 
+      padding: '2rem', 
+      backgroundColor: '#f9fafb', 
+      minHeight: '100vh',
+      fontFamily: 'sans-serif' 
+    }}>
+      <header style={{ marginBottom: '2rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111' }}>Fórum de Estudos</h1>
+        <p style={{ color: '#666' }}>
+          Bem-vindo, <strong>{currentUser.name}</strong>. 
+          Nível de acesso: <span style={{ color: '#2563eb' }}>{userRole}</span>
+        </p>
       </header>
-
-      {/* Lista de Threads (Requisito: Listar) */}
-      <section className="grid gap-4">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <span className="text-xs font-bold bg-blue-100 text-blue-600 px-2 py-1 rounded">
-            React
-          </span>
-          <h3 className="text-xl font-bold mt-2">Como integrar o Supabase no Projeto II?</h3>
-          <p className="text-gray-500 text-sm mt-1">Postado por: Sistema • 0 respostas</p>
-          <button className="mt-4 text-sm font-semibold text-black underline">
-            Responder
-          </button>
-        </div>
-      </section>
-
-      {/* MODAL DE CRIAÇÃO (Requisito: Criar Thread / Rota: /threads) */}
-      {modalAberto && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white p-8 rounded-2xl w-full max-w-lg shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4">Nova Discussão</h2>
-            
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col">
-                <label className="font-medium mb-1">Título</label>
-                <input type="text" placeholder="Ex: Erro no Prisma" className="border p-2 rounded-lg outline-none focus:ring-2 focus:ring-black" />
-              </div>
-              
-              <div className="flex flex-col">
-                <label className="font-medium mb-1">Conteúdo</label>
-                <textarea rows={4} placeholder="Descreva sua dúvida..." className="border p-2 rounded-lg outline-none focus:ring-2 focus:ring-black"></textarea>
-              </div>
-
-              <div className="flex gap-3 mt-2">
-                <button className="bg-black text-white px-6 py-2 rounded-lg flex-1">Publicar</button>
-                <button 
-                  onClick={() => setModalAberto(false)}
-                  className="border border-gray-300 px-6 py-2 rounded-lg flex-1 hover:bg-gray-50"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      
+      <main style={{ maxWidth: '800px' }}>
+        {threads.length > 0 ? (
+          threads.map(thread => (
+            <ForumCard 
+              key={thread.id} 
+              thread={thread} 
+              userRole={userRole}
+              onReply={handleReply}
+              onDelete={handleDelete}
+            />
+          ))
+        ) : (
+          <p>Nenhum tópico encontrado no fórum.</p>
+        )}
+      </main>
     </div>
   );
 }
