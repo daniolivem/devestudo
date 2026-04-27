@@ -1,45 +1,75 @@
 .card {
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px; /* Identidade visual igual à Mentoria */
   padding: 1.5rem;
-  border-radius: 0.75rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
 
-.tag {
-  background: #dbeafe;
-  color: #1e40af;
+.card:hover {
+  border-color: #3b82f6; /* Destaque azul ao passar o rato */
+}
+
+.threadHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.categoryTag {
+  background: #eff6ff;
+  color: #2563eb;
   font-size: 0.75rem;
-  font-weight: bold;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 9999px; /* Badge estilo pílula */
+  text-transform: uppercase;
+}
+
+.date {
+  font-size: 0.85rem;
+  color: #94a3b8;
 }
 
 .title {
   font-size: 1.25rem;
   font-weight: 700;
-  margin-top: 0.5rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.author {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 1rem;
 }
 
 .content {
-  color: #4b5563;
-  margin: 1rem 0;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
 }
 
 .btnReply {
-  background: black;
+  background-color: #1e293b;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .btnDelete {
-  background: #ef4444;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  margin-left: 0.5rem;
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-left: 0.75rem;
   cursor: pointer;
 }

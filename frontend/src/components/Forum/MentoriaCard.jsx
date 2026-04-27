@@ -1,26 +1,28 @@
 import React from 'react';
 import styles from './Mentoria.module.css';
 
-export function MentoriaCard({ mentor, userRole, onAction, onEvaluate }) {
+export function MentoriaCard({ mentor, userRole, onAction }) {
   return (
     <div className={styles.card}>
+      <div className={styles.statusBadge}>Disponível</div>
+      <div className={styles.avatarPlaceholder}>
+        {mentor.name.charAt(0)}
+      </div>
+      <h3 className={styles.name}>{mentor.name}</h3>
       <span className={styles.specialty}>{mentor.specialty}</span>
-      <h3 className={styles.mentorName}>{mentor.name}</h3>
-      <p className={styles.description}>{mentor.bio}</p>
-
+      <p className={styles.bio}>{mentor.bio}</p>
+      
       <div className={styles.footer}>
-        {/* Alunos solicitam, Mentores gerenciam */}
+        <div className={styles.infoRow}>
+          <span>📅 {mentor.availability}</span>
+        </div>
+        
         {userRole === 'STUDENT' ? (
-          <>
-            <button onClick={() => onAction(mentor.id)} className={styles.btnPrimary}>
-              Solicitar Mentoria
-            </button>
-            <button onClick={() => onEvaluate(mentor.id)} className={styles.btnSecondary}>
-              Avaliar Mentor
-            </button>
-          </>
+          <button onClick={() => onAction(mentor.id)} className={styles.primaryButton}>
+            Solicitar Mentoria
+          </button>
         ) : (
-          <button className={styles.btnPrimary}>Ver Minha Agenda</button>
+          <button className={styles.secondaryButton}>Ver Perfil</button>
         )}
       </div>
     </div>

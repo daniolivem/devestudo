@@ -1,58 +1,60 @@
 .card {
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px; /* Cantos arredondados do Figma */
   padding: 1.5rem;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s ease;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.mentorName {
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.avatarPlaceholder {
+  width: 80px;
+  height: 80px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.name {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
+  color: #0f172a;
 }
 
 .specialty {
-  display: inline-block;
-  background: #f3e8ff;
-  color: #6b21a8;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.25rem 0.6rem;
-  border-radius: 9999px;
-  margin-top: 0.5rem;
-}
-
-.description {
-  color: #6b7280;
+  color: #3b82f6;
+  font-weight: 600;
   font-size: 0.875rem;
-  margin: 1rem 0;
+  margin-bottom: 1rem;
 }
 
-.btnPrimary {
-  background: black;
+.primaryButton {
+  background-color: #1e293b;
   color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   width: 100%;
-  padding: 0.6rem;
-  border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
+  margin-top: 1rem;
 }
 
-.btnSecondary {
-  background: white;
-  border: 1px solid #d1d5db;
-  color: #374151;
-  width: 100%;
-  padding: 0.6rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
-  cursor: pointer;
+.primaryButton:hover {
+  background-color: #334155;
 }
