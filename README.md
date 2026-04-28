@@ -36,9 +36,16 @@ devestudo/
   │   └── .env
   └── backend/
       ├── src/
-      ├── prisma/
-      ├── package.json
-      └── .env
+      │   ├── config/           (database.js - conexão com Prisma)
+      │   ├── controllers/      (arquivos de controladores)
+      │   ├── middlewares/      (middlewares)
+      │   ├── models/           (modelos de dados)
+      │   ├── routes/           (index.js - rotas da API)
+      │   ├── services/         (lógica de negócio)
+      │   ├── utils/            (helpers.js - funções utilitárias)
+      │   └── server.js         (arquivo principal da API)
+      ├── prisma/               (schema.prisma)
+      └── package.json
 ```
 
 ---
