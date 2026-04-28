@@ -1,43 +1,32 @@
-# React + Vite
+# Backend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+API em Express com Prisma conectando no Supabase.
 
-Currently, two official plugins are available:
+## Configuração
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Crie um projeto no Supabase.
+2. Copie a connection string direta do banco e preencha o arquivo `.env` com as variáveis abaixo.
+3. Instale as dependências.
+4. Gere o client do Prisma.
+5. Execute as migrações.
 
-## React Compiler
+## Variáveis de ambiente
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+DATABASE_URL="postgresql://postgres:<senha>@db.<project-ref>.supabase.co:5432/postgres?sslmode=require"
+PORT=3000
+```
 
-## Expanding the ESLint configuration
+## Comandos
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run dev
+```
 
-## Installing Vite
+## Observações
 
-To install Vite, follow these steps:
-
-1. Ensure you have Node.js installed on your system. You can download it from [Node.js official website](https://nodejs.org/).
-2. Run the following command to create a new Vite project:
-
-   ```bash
-   npm create vite@latest
-   ```
-
-3. Follow the prompts to set up your project. Select the framework and options you need.
-4. Navigate to your project directory and install dependencies:
-
-   ```bash
-   cd your-project-name
-   npm install
-   ```
-
-5. Start the development server:
-
-   ```bash
-   npm run dev
-   ```
-
-For more details, visit the [Vite documentation](https://vitejs.dev/).
+- `DATABASE_URL` é a URL usada pelo Prisma em runtime.
+- Se você trocar o schema, rode `npx prisma generate` novamente.

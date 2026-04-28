@@ -1,13 +1,139 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+//
+// ENUMS
+//
+
+enum Role {
+  STUDENT
+  MENTOR
+  ADMIN
+}
+
+enum GroupStatus {
+  PENDING
+  APPROVED
+}
+
+enum MentorshipStatus {
+  REQUESTED
+  APPROVED
+  COMPLETED
+  CANCELLED
+}
+
+//
+// USER
+//
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // RELATIONS
+  threads Thread[]
+  replies Reply[]
+
+  groupsCreated Group[]
+  memberships   GroupMember[]
+
+  mentorSessions  Mentorship[] @relation("Mentor")
+  studentSessions Mentorship[] @relation("Student")
+}
+
+//
+// FORUM
+//
+
+model Thread {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  replies Reply[]
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  content   String
+  votes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId   String
+  threadId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+}
+
+//
+// GROUPS
+//
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  members GroupMember[]
+}
+
+model GroupMember {
+  id        String      @id @default(uuid())
+  status    GroupStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  userId  String
+  groupId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId]) // impede duplicacao
+}
+
+//
+// MENTORSHIP
+//
+
+model Mentorship {
+  id        String           @id @default(uuid())
+  status    MentorshipStatus @default(REQUESTED)
+  rating    Int?
+  comment   String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  mentorId  String
+  studentId String
+
+  mentor  User @relation("Mentor", fields: [mentorId], references: [id], onDelete: Cascade)
+  student User @relation("Student", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([mentorId, studentId]) // evita duplicidade de mentoria ativa
 }
