@@ -17,6 +17,14 @@ DATABASE_URL="postgresql://postgres:<senha>@db.<project-ref>.supabase.co:5432/po
 PORT=3000
 ```
 
+### Configuração do ambiente
+
+1. Copie o conteúdo do arquivo `.env.example` para o arquivo .env altera a senha da url:
+
+```bash
+cp .env.example .env
+```
+
 ## Comandos
 
 ```bash
