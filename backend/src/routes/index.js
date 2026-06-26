@@ -1,9 +1,12 @@
-const express = require('express');
+import express from 'express'
+import userRoutes from './userRoutes.js'
+
 const router = express.Router();
 
-// Exemplo de rota
-router.get('/health', (req, res) => {
-  res.json({ status: 'OK' });
-});
+router.get('/', (req, res) => {
+    res.json({ message: "Servidor rodando com sucesso"})
+})
 
-module.exports = router;
+router.use('/users', userRoutes)
+
+export default router
