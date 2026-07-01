@@ -16,16 +16,14 @@ app.use(cors());
 app.use(express.json());
 
 // Rotas
-app.use('/api', routes);
+app.use('/', routes);
 
 // Tratamento de erro
 app.use((err, req, res, next) =>{
-    console.error(err)
+    console.error(err);
 
-    res.status(500).json({
-      error: "Erro interno do servidor"
-    })
-})
+    res.status(500).json({error: err.message})
+});
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
