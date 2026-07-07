@@ -1,18 +1,18 @@
 import { loginService, registerService } from '../services/auth.service.js';
 
-export async function login(req,res){
+export async function login(req, res) {
     try{
         const { email, password } = req.body;
         const result = await loginService( email, password);
 
         return res.status(200).json(result);
     }catch(error){
-        res.status(400).json({message:error.message})
+        return res.status(400).json({message:error.message})
     }
 }
 
 
-export async function register(req,res){
+export async function register(req, res) {
     try{
         const {
             name,
@@ -31,6 +31,6 @@ export async function register(req,res){
         return res.status(201).json({message:"Usuário criado com sucesso", user});
 
     }catch(error){
-        res.status(400).json({message:error.message});
+        return res.status(400).json({message:error.message});
     }
 }

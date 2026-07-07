@@ -1,17 +1,17 @@
-import express from 'express'
-import userRoutes from './userRoutes.js'
-import authRoutes from './auth.routes.js'
+import { Router } from 'express';
+import authRoutes from './auth.routes.js';
+import userRoutes from './user.routes.js';
 
-const router = express.Router();
+const router = Router();
 
 router.get('/', (req, res) => {
-    res.json({ message: "API funcionado"});
+    return res.status(200).json({ message: "API funcionando"});
 })
 
-//usuarios
+//Rotas de usuários
 router.use('/users', userRoutes);
 
-//autenticação
+//Rotas de autenticação
 router.use("/auth",authRoutes);
 
 export default router;

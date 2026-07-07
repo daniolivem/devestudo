@@ -7,3 +7,10 @@ export function generateToken(payload){
         { expiresIn: "1d"}
     );
 }
+
+export function verifyToken(token) {
+    return jwt.verify(
+        token,
+        process.env.JWT_SECRET
+    );
+}
