@@ -19,8 +19,14 @@ enum Role {
 }
 
 enum GroupStatus {
+  ACTIVE
+  CLOSED
+}
+
+enum MemberStatus {
   PENDING
   APPROVED
+  REJECTED
 }
 
 enum MentorshipStatus {
@@ -43,11 +49,22 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  photo          String?  @db.VarChar(255)
+  socialNetwork  String?  @db.VarChar(255)
+  knowledgeLevel String?  @db.VarChar(20)
+  interests      String[] @default([])
+  availability   String?  @db.VarChar(100)
+
+  mentorTechnologies String[] @default([])
+  calendlyUrl        String?  @db.VarChar(255)
+
+  isBlocked Boolean @default(false)
+
   // RELATIONS
   threads Thread[]
   replies Reply[]
 
-  groupsCreated Group[]
+  groupsCreated Group[]       @relation("GroupMentor")
   memberships   GroupMember[]
 
   mentorSessions  Mentorship[] @relation("Mentor")
@@ -58,15 +75,26 @@ model User {
 // FORUM
 //
 
+model Category {
+  id   String @id @default(uuid())
+  name String @unique @db.VarChar(100)
+
+  threads Thread[]
+}
+
 model Thread {
   id        String   @id @default(uuid())
-  title     String
+  title     String   @db.VarChar(100)
   content   String
+  resolved  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
 
   replies Reply[]
 }
@@ -90,23 +118,27 @@ model Reply {
 //
 
 model Group {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String      @id @default(uuid())
+  name         String
+  description  String?
+  technology   String?     @db.VarChar(50)
+  level        String?     @db.VarChar(20)
+  materialsUrl String?     @db.VarChar(255)
+  status       GroupStatus @default(ACTIVE)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   creatorId String
-  creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creator   User   @relation("GroupMentor", fields: [creatorId], references: [id], onDelete: Cascade)
 
   members GroupMember[]
 }
 
 model GroupMember {
-  id        String      @id @default(uuid())
-  status    GroupStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id        String       @id @default(uuid())
+  status    MemberStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   userId  String
   groupId String
@@ -114,7 +146,7 @@ model GroupMember {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, groupId]) // impede duplicacao
+  @@unique([userId, groupId])
 }
 
 //
@@ -124,6 +156,7 @@ model GroupMember {
 model Mentorship {
   id        String           @id @default(uuid())
   status    MentorshipStatus @default(REQUESTED)
+  accessUrl String?          @db.VarChar(255)
   rating    Int?
   comment   String?
   createdAt DateTime         @default(now())
@@ -134,6 +167,4 @@ model Mentorship {
 
   mentor  User @relation("Mentor", fields: [mentorId], references: [id], onDelete: Cascade)
   student User @relation("Student", fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@unique([mentorId, studentId]) // evita duplicidade de mentoria ativa
 }
