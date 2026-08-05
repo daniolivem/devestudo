@@ -12,7 +12,7 @@ app.use(express.urlencoded({
 }));
 
 // Rotas
-app.use('/', routes);
+app.use('/api', routes);
 
 // Tratamento de erro
 app.use((err, req, res, next) => {
