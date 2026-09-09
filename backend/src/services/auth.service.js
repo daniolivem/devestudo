@@ -46,16 +46,46 @@ export async function registerService({
         confirmPassword,
 }) {
 
+    if (!name || !email || !password || !confirmPassword) {
+        const error = new Error("Todos os campos são obrigatórios");
+        error.statusCode = 400;
+        throw error;
+    }
+
     if (password !== confirmPassword) {
-        throw new Error("As senhas não conferem");
-        
+        const error = new Error("As senhas não conferem");
+        error.statusCode = 400;
+        throw error;    
+    }
+
+    if (password.length < 8) {
+        const error = new Error("A senha deve ter no mínimo 8 caracteres");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const hasNumber = /\d/.test(password);
+
+    if (!hasNumber) {
+        const error = new Error("A senha deve conter pelo menos um número");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const hasSpace = /\s/.test(password);
+
+    if (hasSpace) {
+        const error = new Error("A senha não deve conter espaços");
+        error.statusCode = 400;
+        throw error;
     }
 
     const userExist = await findUserByEmail(email);
 
     if (userExist) {
-        throw new Error("E-mail ja cadastrado");
-        
+        const error = new Error("E-mail já cadastrado");
+        error.statusCode = 409;
+        throw error;       
     }
 
     const passwordHash = await bcrypt.hash(password, 10);

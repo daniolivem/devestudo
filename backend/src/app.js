@@ -18,9 +18,13 @@ app.use('/api', routes);
 app.use((err, req, res, next) => {
     console.error(err);
 
-    return res.status(500).json({
-      message: "Erro interno do servidor",
-      error: err.message
+    const statusCode = err.statusCode || 500;
+    const message = statusCode === 500
+        ? "Erro interno do servidor"
+        : err.message;
+
+    return res.status(statusCode).json({
+        message
     });
 });
 

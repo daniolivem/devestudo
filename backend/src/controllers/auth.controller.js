@@ -3,6 +3,8 @@ import { loginService, registerService } from '../services/auth.service.js';
 export async function login(req, res) {
     try{
         const { email, password } = req.body;
+        console.log("Teste de verificação do email", email)
+        console.log(Object.keys(req.body));
         const result = await loginService( email, password);
 
         return res.status(200).json(result);
