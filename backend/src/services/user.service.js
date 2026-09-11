@@ -5,42 +5,21 @@ import {
     findUserPasswordById,
     updatePassword 
  } from "../repositories/user.repository.js";
+
+import { 
+    KNOWLEDGE_LEVELS,
+     AVAILABILITIES, 
+     TECHNOLOGIES
+} from "../constants/profile.constants.js";
+
 import bcrypt from 'bcrypt';
 
-const KNOWLEDGE_LEVELS = [
-    'Iniciante',
-    'Intermediário',
-    'Avançado'
-];
 
-const AVAILABILITIES = [
-    'Seg-Sex manhã',
-    'Seg-Sex tarde',
-    'Seg-Sex noite',
-    'Fim de semana',
-    'Flexível'
-];
-
-const TECHNOLOGIES = [
-    'Python',
-    'JavaScript',
-    'React',
-    'Node.js',
-    'Java',
-    'Spring Boot',
-    'SQL',
-    'HTML/CSS',
-    'TypeScript',
-    'Docker',
-    'AWS',
-    'Git'
-];
-
-export async function getAllUsersService() {
+export function getAllUsersService() {
     return findAllUsers();
 }
 
-export async function updateProfileService(userId, profileData) {
+export function updateProfileService(userId, profileData) {
 
     if (Object.values(profileData).every(value => value === undefined)
     ) {

@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import { findUserByEmail, createUser } from '../repositories/auth.repository.js';
 import { generateToken } from '../utils/jwt.js';
 
+const REGISTER_ROLES = ['STUDENT', 'MENTOR'];
+
 
 export async function loginService(email, password) {
     //buscar usuario pelo email
@@ -44,6 +46,7 @@ export async function registerService({
         email,
         password,
         confirmPassword,
+        role = 'STUDENT'
 }) {
 
     if (!name || !email || !password || !confirmPassword) {
@@ -80,6 +83,12 @@ export async function registerService({
         throw error;
     }
 
+    if (!REGISTER_ROLES.includes(role)) {
+        const error = new Error("Tipo de usuário inválido");
+        error.statusCode = 400;
+        throw error;
+    }
+
     const userExist = await findUserByEmail(email);
 
     if (userExist) {
@@ -94,6 +103,7 @@ export async function registerService({
             name,
             email,
             password: passwordHash,
+            role
     });
 
     return user;
