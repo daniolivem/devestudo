@@ -1,6 +1,6 @@
 import prisma from '../config/database.js';
 
-export async function findAllUsers() {
+export function findAllUsers() {
     return prisma.user.findMany({
         select: {
             id: true,
@@ -13,7 +13,7 @@ export async function findAllUsers() {
     });
 }
 
-export async function updateUserProfile(userId, profileData) {
+export function updateUserProfile(userId, profileData) {
         return prisma.user.update({
             where: {
                 id: userId              
@@ -34,7 +34,7 @@ export async function updateUserProfile(userId, profileData) {
         });      
 }
 
-export async function findUserById(userId) {
+export function findUserById(userId) {
     return prisma.user.findUnique({
         where: {
             id: userId
@@ -55,7 +55,7 @@ export async function findUserById(userId) {
     });
 }
 
-export async function findUserPasswordById(userId) {
+export function findUserPasswordById(userId) {
     return prisma.user.findUnique({
         where: {
             id: userId
@@ -67,7 +67,7 @@ export async function findUserPasswordById(userId) {
     });
 }
 
-export async function updatePassword(userId, passwordHash) {
+export function updatePassword(userId, passwordHash) {
     return prisma.user.update({
         where: {
             id: userId
