@@ -79,7 +79,7 @@ model Category {
   id   String @id @default(uuid())
   name String @unique @db.VarChar(100)
 
-  threads Thread[]
+  threadCategories ThreadCategory[]
 }
 
 model Thread {
@@ -93,10 +93,19 @@ model Thread {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  threadCategories ThreadCategory[]
 
   replies Reply[]
+}
+
+model ThreadCategory {
+  threadId   String
+  categoryId String
+
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@id([threadId, categoryId])
 }
 
 model Reply {
@@ -158,7 +167,7 @@ model Mentorship {
   status    MentorshipStatus @default(REQUESTED)
   accessUrl String?          @db.VarChar(255)
   rating    Int?
-  comment   String?
+  comment   String?          @db.VarChar(255)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 
