@@ -10,31 +10,28 @@ import categoryRoutes from './category.routes.js';
 const router = Router();
 
 router.get('/', (req, res) => {
-    return res.status(200).json({ message: 'API funcionando' });
+    return res.status(200).json({ message: 'API working' });
 });
 
-//Rotas de usuários
+// User routes
 router.use('/users', userRoutes);
 
-//Rotas de autenticação
+// Authentication routes
 router.use('/auth', authRoutes);
 
-//Rotas de perfil
+// Profile routes
 router.use('/profile', profileRoutes);
 
-//Rotas de mentores
+// Mentor routes
 router.use('/mentors', mentorRoutes);
 
-//Rotas de grupos
+// Group routes
 router.use('/groups', groupRoutes);
-router.use('/grupos', groupRoutes);
 
-//Rotas de mentorias
+// Mentorship routes
 router.use('/mentorships', mentorshipRoutes);
-router.use('/mentorias', mentorshipRoutes);
 
-//Rotas de categorias
+// Category routes
 router.use('/categories', categoryRoutes);
-router.use('/categorias', categoryRoutes);
 
 export default router;
