@@ -10,8 +10,8 @@ import {
 
 const router = Router();
 
-router.get('/', authMiddleware, authorizeRoles('ADMIN'), getCategories);
-router.post('/', authMiddleware, authorizeRoles('ADMIN'), createCategory);
+router.get('/', authMiddleware, getCategories);
+router.post('/', authMiddleware, authorizeRoles('MENTOR', 'ADMIN'), createCategory);
 router.put('/:id', authMiddleware, authorizeRoles('ADMIN'), updateCategory);
 router.delete('/:id', authMiddleware, authorizeRoles('ADMIN'), deleteCategory);
 
