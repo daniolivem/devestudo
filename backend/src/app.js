@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 import routes from './routes/index.js';
+import { swaggerSpec } from './config/swagger.js';
 
 const app = express();
 
@@ -10,6 +12,8 @@ app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rotas
 app.use('/api', routes);

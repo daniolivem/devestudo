@@ -34,6 +34,16 @@ npx prisma migrate dev
 npm run dev
 ```
 
+## Swagger
+
+Com o backend em execucao, acesse a documentacao interativa em:
+
+```text
+http://localhost:3000/api-docs
+```
+
+Para documentar uma nova rota, adicione um bloco `@swagger` acima da definicao da rota. Rotas protegidas podem usar `security: [{ bearerAuth: [] }]` para habilitar o botao `Authorize` da interface.
+
 ## Observações
 
 - `DATABASE_URL` é a URL usada pelo Prisma em runtime.

@@ -9,6 +9,16 @@ import categoryRoutes from './category.routes.js';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api:
+ *   get:
+ *     summary: Verifica se a API esta funcionando
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API funcionando
+ */
 router.get('/', (req, res) => {
     return res.status(200).json({ message: 'API working' });
 });
