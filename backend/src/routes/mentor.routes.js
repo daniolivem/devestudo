@@ -9,6 +9,17 @@ import {
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/mentors:
+ *   get:
+ *     summary: Lista os mentores
+ *     tags: [Mentores]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Lista de mentores
+ */
 router.get(
     '/', 
     authMiddleware, 
@@ -17,6 +28,17 @@ router.get(
 );
 
 
+/**
+ * @swagger
+ * /api/mentors/profile:
+ *   put:
+ *     summary: Atualiza o perfil do mentor autenticado
+ *     tags: [Mentores]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Perfil atualizado
+ */
 router.put(
     '/profile',
     authMiddleware,

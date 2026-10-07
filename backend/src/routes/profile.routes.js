@@ -4,8 +4,43 @@ import { getProfile, updateProfile, changePassword } from '../controllers/user.c
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/profile:
+ *   get:
+ *     summary: Consulta o perfil do usuario autenticado
+ *     tags: [Perfil]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Perfil do usuario
+ */
 router.get('/', authMiddleware, getProfile);
+
+/**
+ * @swagger
+ * /api/profile:
+ *   put:
+ *     summary: Atualiza o perfil do usuario autenticado
+ *     tags: [Perfil]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Perfil atualizado
+ */
 router.put('/', authMiddleware, updateProfile);
+
+/**
+ * @swagger
+ * /api/profile/password:
+ *   put:
+ *     summary: Altera a senha do usuario autenticado
+ *     tags: [Perfil]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Senha alterada
+ */
 router.put('/password', authMiddleware, changePassword);
 
 export default router;

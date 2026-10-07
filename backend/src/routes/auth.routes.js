@@ -37,9 +37,39 @@ router.post('/login', login);
  *   post:
  *     summary: Cadastra um usuario
  *     tags: [Autenticacao]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, password, confirmPassword]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Maria da Silva
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: maria@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 example: Senha123
+ *               confirmPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: Senha123
+ *               role:
+ *                 type: string
+ *                 enum: [STUDENT, MENTOR]
+ *                 default: STUDENT
  *     responses:
  *       201:
  *         description: Usuario cadastrado
+ *       400:
+ *         description: Dados invalidos
  */
 router.post('/register', register);
 
