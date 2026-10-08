@@ -1,6 +1,6 @@
 import prisma from "../config/database.js";
 
-export async function findUserByEmail(email) {
+export function findUserByEmail(email) {
     return prisma.user.findUnique({
         where: {
             email,
@@ -8,7 +8,7 @@ export async function findUserByEmail(email) {
     });
 }
 
-export async function createUser(data) {
+export  function createUser(data) {
     return prisma.user.create({
         data,
 

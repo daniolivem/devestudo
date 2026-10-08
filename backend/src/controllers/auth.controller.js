@@ -1,36 +1,39 @@
 import { loginService, registerService } from '../services/auth.service.js';
 
-export async function login(req, res) {
+export async function login(req, res, next) {
     try{
         const { email, password } = req.body;
         const result = await loginService( email, password);
 
         return res.status(200).json(result);
     }catch(error){
-        return res.status(400).json({message:error.message})
+        return next(error);
     }
 }
 
 
-export async function register(req, res) {
+export async function register(req, res, next) {
     try{
         const {
             name,
             email,
             password,
-            confirmPassword
+            confirmPassword,
+            role
+
         } = req.body;
 
         const user = await registerService({
             name,
             email,
             password,
-            confirmPassword
+            confirmPassword,
+            role
         });
 
         return res.status(201).json({message:"Usuário criado com sucesso", user});
 
     }catch(error){
-        return res.status(400).json({message:error.message});
+        return next(error);
     }
 }
