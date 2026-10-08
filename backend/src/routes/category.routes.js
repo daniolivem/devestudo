@@ -30,6 +30,12 @@ router.get('/', authMiddleware, getCategories);
  *     summary: Cria uma categoria
  *     tags: [Categorias]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Category'
  *     responses:
  *       201:
  *         description: Categoria criada
@@ -49,6 +55,12 @@ router.post('/', authMiddleware, authorizeRoles('MENTOR', 'ADMIN'), createCatego
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Category'
  *     responses:
  *       200:
  *         description: Categoria atualizada

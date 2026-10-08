@@ -30,6 +30,12 @@ router.get('/', authMiddleware, getMentorships);
  *     summary: Solicita uma mentoria
  *     tags: [Mentorias]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MentorshipRequest'
  *     responses:
  *       201:
  *         description: Mentoria solicitada
@@ -49,6 +55,12 @@ router.post('/', authMiddleware, authorizeRoles('STUDENT'), createMentorshipRequ
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MentorshipStatus'
  *     responses:
  *       200:
  *         description: Status atualizado
@@ -68,6 +80,12 @@ router.patch('/:id/status', authMiddleware, updateMentorshipStatus);
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MentorshipRating'
  *     responses:
  *       200:
  *         description: Mentoria avaliada
@@ -81,6 +99,12 @@ router.post('/:id/avaliar', authMiddleware, evaluateMentorship);
  *     summary: Avalia uma mentoria pelo id enviado no corpo
  *     tags: [Mentorias]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MentorshipRating'
  *     responses:
  *       200:
  *         description: Mentoria avaliada

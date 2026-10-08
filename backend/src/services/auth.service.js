@@ -10,14 +10,18 @@ export async function loginService(email, password) {
     const user = await findUserByEmail(email);
 
     if (!user) {
-        throw new Error("E-mail ou senha inválidos.");
+        const error = new Error("E-mail ou senha inválidos.");
+        error.statusCode = 401;
+        throw error;
     }
 
     //compara senha informada com senha salva no banco
     const passwordValid = await bcrypt.compare(password, user.password);
 
     if (!passwordValid) {
-        throw new Error("E-mail ou senha inválidos.");
+        const error = new Error("E-mail ou senha inválidos.");
+        error.statusCode = 401;
+        throw error;
     }
 
     //criar token jwt

@@ -16,6 +16,13 @@ const router = Router();
  *     summary: Lista os mentores
  *     tags: [Mentores]
  *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: technology
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: JavaScript
  *     responses:
  *       200:
  *         description: Lista de mentores
@@ -35,6 +42,12 @@ router.get(
  *     summary: Atualiza o perfil do mentor autenticado
  *     tags: [Mentores]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MentorProfile'
  *     responses:
  *       200:
  *         description: Perfil atualizado

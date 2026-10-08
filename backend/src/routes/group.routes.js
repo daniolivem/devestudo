@@ -17,6 +17,18 @@ const router = Router();
  *     summary: Lista os grupos
  *     tags: [Grupos]
  *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: technology
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: level
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [Iniciante, Intermediário, Avançado]
  *     responses:
  *       200:
  *         description: Lista de grupos
@@ -30,6 +42,12 @@ router.get('/', authMiddleware, getGroups);
  *     summary: Cria um grupo
  *     tags: [Grupos]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Group'
  *     responses:
  *       201:
  *         description: Grupo criado
@@ -43,6 +61,12 @@ router.post('/', authMiddleware, authorizeRoles('MENTOR', 'ADMIN'), createGroup)
  *     summary: Participa de um grupo
  *     tags: [Grupos]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/GroupParticipation'
  *     responses:
  *       200:
  *         description: Participacao solicitada
@@ -56,6 +80,12 @@ router.post('/participar', authMiddleware, joinGroup);
  *     summary: Aprova um membro do grupo
  *     tags: [Grupos]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/GroupMemberApproval'
  *     responses:
  *       200:
  *         description: Membro aprovado

@@ -24,6 +24,12 @@ router.get('/', authMiddleware, getProfile);
  *     summary: Atualiza o perfil do usuario autenticado
  *     tags: [Perfil]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProfileUpdate'
  *     responses:
  *       200:
  *         description: Perfil atualizado
@@ -37,6 +43,12 @@ router.put('/', authMiddleware, updateProfile);
  *     summary: Altera a senha do usuario autenticado
  *     tags: [Perfil]
  *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ChangePassword'
  *     responses:
  *       200:
  *         description: Senha alterada

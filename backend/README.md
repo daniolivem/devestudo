@@ -44,6 +44,13 @@ http://localhost:3000/api-docs
 
 Para documentar uma nova rota, adicione um bloco `@swagger` acima da definicao da rota. Rotas protegidas podem usar `security: [{ bearerAuth: [] }]` para habilitar o botao `Authorize` da interface.
 
+### Testando rotas protegidas
+
+1. Execute `POST /api/auth/login` e copie o valor de `token` da resposta.
+2. Clique em `Authorize` no Swagger.
+3. Informe somente `<token>` e confirme em `Authorize`. O Swagger adiciona `Bearer` automaticamente.
+4. O token fica persistido no Swagger e sera enviado nas demais rotas protegidas.
+
 ## Observações
 
 - `DATABASE_URL` é a URL usada pelo Prisma em runtime.
