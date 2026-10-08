@@ -26,3 +26,7 @@ dist-ssr
 .env
 agents
 devestudo-fullstack.agent.md
+
+postman
+.DevEstudo.postman_collection.json
+.DevEstudo.postman_environment.json
