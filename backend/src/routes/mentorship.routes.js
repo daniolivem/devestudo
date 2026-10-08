@@ -64,6 +64,8 @@ router.post('/', authMiddleware, authorizeRoles('STUDENT'), createMentorshipRequ
  *     responses:
  *       200:
  *         description: Status atualizado
+ *       403:
+ *         description: Apenas o mentor pode aprovar a mentoria
  */
 router.patch('/:id/status', authMiddleware, updateMentorshipStatus);
 

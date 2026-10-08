@@ -84,6 +84,12 @@ export async function updateMentorshipStatusService(userId, mentorshipId, status
         throw error;
     }
 
+    if (status === 'APPROVED' && mentorship.mentorId !== userId) {
+        const error = new Error('Apenas o mentor pode aprovar a mentoria');
+        error.statusCode = 403;
+        throw error;
+    }
+
     if (!['APPROVED', 'CANCELLED', 'COMPLETED'].includes(status)) {
         const error = new Error('Status inválido para a mentoria');
         error.statusCode = 400;
