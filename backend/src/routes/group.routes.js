@@ -68,7 +68,7 @@ router.post('/', authMiddleware, authorizeRoles('MENTOR', 'ADMIN'), createGroup)
  *           schema:
  *             $ref: '#/components/schemas/GroupParticipation'
  *     responses:
- *       200:
+ *       201:
  *         description: Participacao solicitada
  */
 router.post('/participar', authMiddleware, joinGroup);

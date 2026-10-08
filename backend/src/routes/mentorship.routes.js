@@ -94,26 +94,4 @@ router.patch('/:id/status', authMiddleware, updateMentorshipStatus);
  */
 router.post('/:id/avaliar', authMiddleware, evaluateMentorship);
 
-/**
- * @swagger
- * /api/mentorships/avaliar:
- *   post:
- *     summary: Avalia uma mentoria pelo id enviado no corpo
- *     tags: [Mentorias]
- *     security: [{ bearerAuth: [] }]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/MentorshipRating'
- *     responses:
- *       200:
- *         description: Mentoria avaliada
- */
-router.post('/avaliar', authMiddleware, (req, res, next) => {
-    req.params.id = req.body.mentorshipId;
-    return evaluateMentorship(req, res, next);
-});
-
 export default router;

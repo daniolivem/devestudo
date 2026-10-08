@@ -36,6 +36,7 @@ export async function joinGroup(req, res, next) {
         return res.status(201).json({
             message: 'Solicitação de participação enviada com sucesso',
             membership,
+            group: membership.group,
         });
     } catch (error) {
         return next(error);
