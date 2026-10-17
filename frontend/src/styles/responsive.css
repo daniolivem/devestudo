@@ -1,0 +1,183 @@
+@media (max-width: 760px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex-basis: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar-header {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px;
+  }
+
+  .brand {
+    padding: 0;
+    font-size: 18px;
+  }
+
+  .menu-toggle {
+    width: 46px;
+    height: 42px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--white);
+    cursor: pointer;
+  }
+
+  .menu-toggle span {
+    width: 20px;
+    height: 2px;
+    display: block;
+    background: var(--primary);
+    border-radius: 999px;
+  }
+
+  .sidebar-nav {
+    display: none;
+    padding: 0 18px 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  .nav-link {
+    min-height: 48px;
+    justify-content: flex-start;
+    padding: 0 14px;
+    border-left: 4px solid transparent;
+    border-bottom: 0;
+    border-radius: 6px;
+  }
+
+  .nav-link.active {
+    border-left-color: var(--accent);
+  }
+
+  .logout-link {
+    display: none;
+    margin: 0 18px 16px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--black);
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .sidebar--open .sidebar-nav {
+    display: grid;
+    gap: 6px;
+  }
+
+  .sidebar--open .logout-link {
+    display: block;
+  }
+
+  .page {
+    padding: 28px 18px 44px;
+  }
+
+  .grid-2,
+  .dashboard-grid,
+  .stats-row,
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card {
+    min-height: auto;
+  }
+
+  .topic-card {
+    grid-template-columns: 1fr;
+  }
+
+  .forum-header,
+  .groups-admin-header,
+  .groups-user-header,
+  .group-card-title-row,
+  .mentors-admin-header,
+  .modal-header,
+  .modal-actions,
+  .reply-header,
+  .reply-actions,
+  .topic-detail-title-row,
+  .mentor-preferences-actions,
+  .mentorship-section-header {
+    flex-direction: column;
+  }
+
+  .topic-replies {
+    text-align: left;
+  }
+
+  .group-actions,
+  .admin-group-row,
+  .admin-mentor-row,
+  .profile-actions,
+  .admin-summary-row,
+  .admin-list-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .mentorship-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 12px;
+    padding: 14px 0;
+  }
+
+  .mentorship-row > .status-badge {
+    width: auto;
+    justify-self: start;
+    align-self: start;
+  }
+
+  .mentorship-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .mentorship-actions .btn {
+    min-width: 0;
+    flex: 1 1 120px;
+  }
+
+  .mentorship-status-panel,
+  .admin-mentors-panel {
+    padding: 14px;
+  }
+
+  .mentorship-section-header h2 {
+    font-size: 18px;
+  }
+
+  .mentors-admin-header .btn {
+    min-width: 0;
+    align-self: flex-start;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .auth-card {
+    min-height: auto;
+  }
+}

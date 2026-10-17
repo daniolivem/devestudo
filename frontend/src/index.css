@@ -1,0 +1,71 @@
+:root {
+  --bg: #ffffff;
+  --panel: #f7fbff;
+  --panel-strong: #edf6ff;
+  --text: #061632;
+  --muted: #53617a;
+  --soft: #8a95ad;
+  --line: #d7e5f3;
+  --line-strong: #a9c3e5;
+  --chip: #e5f3ff;
+  --primary: #06214a;
+  --primary-strong: #03142f;
+  --accent: #18d9c2;
+  --accent-blue: #2f78ff;
+  --accent-violet: #7c4dff;
+  --accent-soft: #dffaf6;
+  --focus: #2f78ff;
+  --black: var(--primary);
+  --white: #ffffff;
+  --brand-gradient: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    var(--accent-blue) 30%,
+    var(--accent-violet) 50%,
+    var(--accent-blue) 70%,
+    var(--accent) 100%
+  );
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+}
