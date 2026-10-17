@@ -1,21 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
 
-const app = express();
+import dotenv from 'dotenv';
+import app from './app.js';
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
-
-// Rotas
-app.use('/api', require('./routes'));
+dotenv.config();
 
 // Porta
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
   console.log(`Servidor rodando na porta ${PORT}`);
+
 });
 
-module.exports = app;
+

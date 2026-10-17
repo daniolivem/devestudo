@@ -3,12 +3,24 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+
+const PRISMA_CLI_URL =
+  process.env.DIRECT_URL ?? process.env.DATABASE_URL;
+
+if (!PRISMA_CLI_URL) {
+  throw new Error(
+    "❌ DIRECT_URL ou DATABASE_URL não definida no .env"
+  );
+}
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
+
   migrations: {
     path: "prisma/migrations",
   },
+
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: PRISMA_CLI_URL,
   },
 });
