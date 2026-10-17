@@ -1,0 +1,330 @@
+.mentor-card {
+  min-height: 298px;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+}
+
+.mentor-student-card {
+  min-height: 270px;
+  gap: 12px;
+}
+
+.mentor-card h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.mentor-student-heading,
+.admin-mentor-name-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mentor-student-heading h2,
+.admin-mentor-name-row h3 {
+  margin: 0;
+}
+
+.mentor-copy {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.mentor-card .chip-list {
+  margin: 8px 0 4px;
+}
+
+.mentor-stats {
+  display: grid;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.mentor-rating-display {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.star-rating {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  min-height: 24px;
+  padding: 0 1px;
+  border: 0;
+  background: transparent;
+  color: var(--soft);
+  font-size: 20px;
+  line-height: 1;
+}
+
+button.star {
+  cursor: pointer;
+}
+
+.star--active {
+  color: var(--accent-violet);
+}
+
+.mentor-feedback-form {
+  display: grid;
+  gap: 16px;
+  max-width: 420px;
+  margin-top: 24px;
+}
+
+.mentor-card .btn {
+  width: 100%;
+  margin-top: auto;
+}
+
+.mentor-card-actions {
+  display: grid;
+  grid-template-columns: minmax(132px, 1.3fr) minmax(110px, 1fr) minmax(96px, 0.9fr);
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.mentor-card-actions .btn {
+  width: auto;
+  min-width: 0;
+  min-height: 38px;
+  margin-top: 0;
+}
+
+.mentor-session-summary {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.mentor-session-summary p {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.mentor-session-details {
+  display: grid;
+  gap: 10px;
+}
+
+.mentor-session-details div {
+  display: grid;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.mentor-session-details strong {
+  font-size: 12px;
+}
+
+.mentor-session-details span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.mentor-preferences-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.mentor-preferences-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.mentorship-status-panel {
+  margin-bottom: 28px;
+  padding: 20px;
+}
+
+.mentorship-list-scroll {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.mentorship-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.mentorship-section-header h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.mentorship-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 20px;
+  align-items: center;
+  padding: 22px 0;
+}
+
+.mentorship-row:first-child {
+  padding-top: 8px;
+}
+
+.mentorship-row > .status-badge {
+  justify-self: start;
+  align-self: start;
+}
+
+.mentorship-row h3 {
+  font-size: 16px;
+}
+
+.mentorship-message {
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.mentorship-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.mentorship-actions .btn {
+  min-width: 116px;
+}
+
+.mentors-admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.mentors-admin-header .btn {
+  min-width: 190px;
+}
+
+.admin-mentors-panel {
+  margin-bottom: 28px;
+  padding: 20px;
+}
+
+.admin-mentors-head,
+.admin-mentor-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 180px 170px 230px;
+  gap: 18px;
+  align-items: center;
+}
+
+.admin-mentors-head {
+  padding-bottom: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-mentor-row {
+  padding: 18px 0;
+}
+
+.admin-mentor-row h3 {
+  font-size: 16px;
+}
+
+.admin-mentor-row .chip-list {
+  margin-top: 10px;
+}
+
+.admin-mentor-row > span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.admin-mentor-row .mentorship-actions {
+  justify-content: flex-start;
+}
+
+.admin-mentor-row .mentorship-actions .btn {
+  min-width: 68px;
+}
+
+@media (max-width: 900px) {
+  .mentorship-status-panel,
+  .admin-mentors-panel {
+    padding: 16px;
+  }
+
+  .admin-mentors-head {
+    display: none;
+  }
+
+  .admin-mentor-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .admin-mentor-row > span {
+    display: inline-flex;
+    gap: 6px;
+  }
+
+  .admin-mentor-row > span:nth-of-type(1)::before {
+    content: "Disponibilidade:";
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .admin-mentor-row > span:nth-of-type(2)::before {
+    content: "Canal:";
+    color: var(--muted);
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 760px) {
+  .mentor-student-card {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+
+  .mentor-card-actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .mentor-card-actions .btn:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .mentor-card-actions .btn {
+    min-width: 0;
+    min-height: 40px;
+  }
+
+  .mentorship-row {
+    padding: 18px 0;
+  }
+}

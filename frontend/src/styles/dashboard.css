@@ -1,0 +1,178 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(300px, 1fr));
+  gap: 22px;
+}
+
+.dashboard-card {
+  min-height: 540px;
+  padding: 18px;
+}
+
+.dashboard-card h2,
+.section-card h2 {
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.mini-row,
+.forum-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 0;
+}
+
+.mini-row:first-of-type,
+.forum-row:first-of-type {
+  padding-top: 0;
+}
+
+.mini-title {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.mini-meta {
+  margin-top: 4px;
+  color: var(--soft);
+  font-size: 12px;
+}
+
+.status-badge {
+  padding: 8px 10px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge--blocked {
+  background: #fde8ee;
+  color: #9f2444;
+}
+
+.mentor-home-item {
+  padding: 14px 0;
+}
+
+.mentor-rating {
+  margin-top: 10px;
+  color: var(--soft);
+  font-size: 12px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-bottom: 22px;
+}
+
+.stat-card {
+  min-height: 110px;
+  padding: 18px;
+}
+
+.stat-card p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.admin-dashboard-grid {
+  margin-top: 0;
+}
+
+.admin-panel {
+  min-height: 540px;
+  padding: 18px;
+}
+
+.admin-panel h2 {
+  font-size: 16px;
+}
+
+.admin-panel h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.admin-panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.user-row,
+.admin-list-row,
+.admin-summary-row {
+  display: grid;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 0;
+  font-size: 14px;
+}
+
+.user-row {
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+}
+
+.admin-list-row {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.admin-summary-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(135deg, #dffaf6, #dfe9ff);
+}
+
+.role-pill {
+  display: inline-flex;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--chip);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.admin-stats {
+  margin-top: 22px;
+  padding: 16px;
+}
+
+.admin-stats h3 {
+  margin-top: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.admin-stats p {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-actions {
+  display: grid;
+  gap: 8px;
+}

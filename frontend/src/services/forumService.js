@@ -1,0 +1,172 @@
+export const forumTags = [
+  "Python",
+  "React",
+  "Java",
+  "JavaScript",
+  "Node.js",
+  "TypeScript",
+  "Angular",
+  "Vue",
+  "PHP",
+  "Ruby",
+  "Go",
+  "Rust",
+];
+
+export const initialForumTopics = [
+  {
+    title: "Como implementar autenticação JWT em Node.js?",
+    author: "Maria Santos",
+    lastInteractionHours: 2,
+    replies: 34,
+    votes: 18,
+    tags: ["Node.js", "JavaScript"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Diferença entre useEffect e useLayoutEffect no React",
+    author: "Pedro Oliveira",
+    lastInteractionHours: 4,
+    replies: 28,
+    votes: 11,
+    tags: ["React", "JavaScript"],
+    createdByCurrentMentor: true,
+  },
+  {
+    title: "Melhores práticas para estruturar projetos Spring Boot",
+    author: "Ana Costa",
+    lastInteractionHours: 5,
+    replies: 19,
+    votes: 7,
+    tags: ["Java"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Como fazer deploy de aplicação Python no Heroku?",
+    author: "Carlos Mendes",
+    lastInteractionHours: 6,
+    replies: 42,
+    votes: 15,
+    tags: ["Python"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "TypeScript: quando usar type vs interface?",
+    author: "Juliana Rocha",
+    lastInteractionHours: 8,
+    replies: 56,
+    votes: 21,
+    tags: ["TypeScript", "JavaScript"],
+    createdByCurrentMentor: true,
+  },
+  {
+    title: "Otimização de queries em PostgreSQL",
+    author: "Roberto Silva",
+    lastInteractionHours: 10,
+    replies: 23,
+    votes: 9,
+    tags: ["Node.js"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Como gerenciar estado global no React sem Redux?",
+    author: "Fernanda Lima",
+    lastInteractionHours: 12,
+    replies: 67,
+    votes: 25,
+    tags: ["React", "JavaScript"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Introdução ao desenvolvimento de APIs REST",
+    author: "Bruno Costa",
+    lastInteractionHours: 24,
+    replies: 89,
+    votes: 30,
+    tags: ["Node.js", "JavaScript"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Como versionar banco de dados em projetos Node.js?",
+    author: "Helena Martins",
+    lastInteractionHours: 28,
+    replies: 14,
+    votes: 6,
+    tags: ["Node.js", "PostgreSQL"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Angular Signals: quando vale a pena usar?",
+    author: "Diego Teles",
+    lastInteractionHours: 32,
+    replies: 18,
+    votes: 8,
+    tags: ["Angular", "TypeScript"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Rust para backend web: por onde começar?",
+    author: "Camila Nunes",
+    lastInteractionHours: 36,
+    replies: 11,
+    votes: 5,
+    tags: ["Rust"],
+    createdByCurrentMentor: false,
+  },
+  {
+    title: "Boas práticas para deploy com Docker Compose",
+    author: "Ronaldo Lima",
+    lastInteractionHours: 40,
+    replies: 27,
+    votes: 13,
+    tags: ["Node.js"],
+    createdByCurrentMentor: false,
+  },
+];
+
+export const forumTopicDetails = {
+  "como-implementar-autenticacao-jwt-em-node-js": {
+    title: "Como implementar autenticação JWT em Node.js?",
+    author: "Maria Santos",
+    lastInteractionHours: 2,
+    votes: 18,
+    tags: ["Node.js", "JavaScript"],
+    content:
+      "Estou criando uma API em Node.js e quero proteger rotas com JWT. Qual seria uma estrutura simples e segura para gerar o token no login e validar nas rotas privadas?",
+    replies: [
+      {
+        author: "Carlos Mendes",
+        time: "1h atrás",
+        content: "Separe a autenticação em middleware. No login, gere o token com o id do usuário e uma expiração curta.",
+        votes: 8,
+      },
+      {
+        author: "Ana Costa",
+        time: "45min atrás",
+        content: "Também vale guardar o segredo em variável de ambiente e nunca retornar dados sensíveis no payload.",
+        votes: 5,
+      },
+    ],
+  },
+  "diferenca-entre-useeffect-e-uselayouteffect-no-react": {
+    title: "Diferença entre useEffect e useLayoutEffect no React",
+    author: "Pedro Oliveira",
+    lastInteractionHours: 4,
+    votes: 11,
+    tags: ["React", "JavaScript"],
+    content:
+      "Em quais casos faz sentido usar useLayoutEffect no lugar de useEffect? Tenho dúvidas sobre impacto visual e performance.",
+    replies: [
+      {
+        author: "Beatriz Lima",
+        time: "3h atrás",
+        content: "Use useLayoutEffect quando precisa medir ou alterar layout antes do navegador pintar a tela.",
+        votes: 6,
+      },
+    ],
+  },
+};
+
+export function getTopicDetails(topicSlug) {
+  return forumTopicDetails[topicSlug];
+}
