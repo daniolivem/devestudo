@@ -6,6 +6,8 @@ import mentorRoutes from './mentor.routes.js';
 import groupRoutes from './group.routes.js';
 import mentorshipRoutes from './mentorship.routes.js';
 import categoryRoutes from './category.routes.js';
+import threadRoutes from './thread.routes.js';
+import replyRoutes from './reply.routes.js';
 
 const router = Router();
 
@@ -43,5 +45,7 @@ router.use('/mentorships', mentorshipRoutes);
 
 // Category routes
 router.use('/categories', categoryRoutes);
+router.use('/threads', threadRoutes);
+router.use('/replies', replyRoutes);
 
 export default router;

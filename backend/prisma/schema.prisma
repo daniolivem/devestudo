@@ -63,6 +63,8 @@ model User {
   // RELATIONS
   threads Thread[]
   replies Reply[]
+  threadVotes ThreadVote[]
+  replyVotes ReplyVote[]
 
   groupsCreated Group[]       @relation("GroupMentor")
   memberships   GroupMember[]
@@ -96,6 +98,7 @@ model Thread {
   threadCategories ThreadCategory[]
 
   replies Reply[]
+  votes ThreadVote[]
 }
 
 model ThreadCategory {
@@ -120,6 +123,25 @@ model Reply {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  replyVotes ReplyVote[]
+}
+
+model ThreadVote {
+  threadId String
+  userId String
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@id([threadId, userId])
+}
+
+model ReplyVote {
+  replyId String
+  userId String
+  reply Reply @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@id([replyId, userId])
 }
 
 //

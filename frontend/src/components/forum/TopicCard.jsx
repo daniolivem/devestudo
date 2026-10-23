@@ -3,7 +3,7 @@ import VoteButton from "./VoteButton";
 import { formatLastInteraction } from "../../utils/forum";
 
 export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, onDelete, onUpvote }) {
-  const canManage = isAdmin || (isMentor && topic.createdByCurrentMentor);
+  const canManage = isAdmin || topic.canManage || (isMentor && topic.createdByCurrentMentor);
 
   function handleKeyboardOpen(e) {
     if (e.key === "Enter" || e.key === " ") {
@@ -47,7 +47,7 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
           hasVoted={topic.hasVoted}
           onClick={(e) => {
             e.stopPropagation();
-            onUpvote(topic.title);
+            onUpvote(topic.id);
           }}
         />
         {canManage ? (
@@ -74,7 +74,7 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
               className="btn--small"
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(topic.title);
+                onDelete(topic.id);
               }}
             >
               Excluir

@@ -1,7 +1,7 @@
 import Button from "../ui/Button";
 import { forumTags } from "../../services/forumService";
 
-export default function TopicFormModal({ title, subtitle, submitLabel, initialTopic = {}, onClose, onSubmit }) {
+export default function TopicFormModal({ title, subtitle, submitLabel, initialTopic = {}, tags = forumTags, onClose, onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -57,7 +57,7 @@ export default function TopicFormModal({ title, subtitle, submitLabel, initialTo
           <fieldset className="tag-fieldset">
             <legend>Tecnologias</legend>
             <div className="tag-options">
-              {forumTags.map((tag) => (
+              {tags.map((tag) => (
                 <label className="tag-option" key={tag}>
                   <input type="checkbox" name="tags" value={tag} defaultChecked={initialTopic.tags?.includes(tag)} />
                   <span>{tag}</span>

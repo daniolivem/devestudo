@@ -1,38 +1,35 @@
-import { useState } from "react";
-import { initialForumTopics } from "../services/forumService";
+import { useCallback, useEffect, useState } from 'react';
+import * as forum from '../services/forumService';
 
-export function useForumTopics() {
-  const [topics, setTopics] = useState(initialForumTopics);
+export function useForumTopics({ search = '', tag = '', page = 1, limit = 10 } = {}) {
+  const [topics, setTopics] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  function createTopic(topic) {
-    setTopics((currentTopics) => [topic, ...currentTopics]);
-  }
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await forum.listTopics({ search: search || undefined, tag: tag || undefined, page, limit });
+      setTopics(result.items || result.threads || result.data || []);
+      setTotal(result.total ?? result.pagination?.total ?? (result.items || result.threads || result.data || []).length);
+    } catch (err) {
+      setError(forum.getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [search, tag, page, limit]);
 
-  function updateTopic(originalTitle, topicChanges) {
-    setTopics((currentTopics) =>
-      currentTopics.map((topic) =>
-        topic.title === originalTitle ? { ...topic, ...topicChanges, lastInteractionHours: 0 } : topic,
-      ),
-    );
-  }
+  useEffect(() => {
+    const request = window.setTimeout(() => { refresh(); }, 0);
+    return () => window.clearTimeout(request);
+  }, [refresh]);
 
-  function deleteTopic(topicTitle) {
-    setTopics((currentTopics) => currentTopics.filter((topic) => topic.title !== topicTitle));
-  }
+  async function createTopic(payload) { const created = await forum.createTopic(payload); await refresh(); return created; }
+  async function updateTopic(id, payload) { const updated = await forum.updateTopic(id, payload); await refresh(); return updated; }
+  async function deleteTopic(id) { const result = await forum.deleteTopic(id); await refresh(); return result; }
+  async function upvoteTopic(id) { const result = await forum.voteOnThread(id); await refresh(); return result; }
 
-  function upvoteTopic(topicTitle) {
-    setTopics((currentTopics) =>
-      currentTopics.map((topic) =>
-        topic.title === topicTitle && !topic.hasVoted ? { ...topic, votes: topic.votes + 1, hasVoted: true } : topic,
-      ),
-    );
-  }
-
-  return {
-    topics,
-    createTopic,
-    updateTopic,
-    deleteTopic,
-    upvoteTopic,
-  };
+  return { topics, total, loading, error, refresh, createTopic, updateTopic, deleteTopic, upvoteTopic };
 }

@@ -1,0 +1,13 @@
+import * as forum from '../services/thread.service.js';
+const run = (fn) => async (req, res, next) => { try { const result = await fn(req); return res.status(result?.status || 200).json(result?.body ?? result); } catch (error) { return next(error); } };
+export const listThreads = run((req) => forum.listThreads(req.query, req.user.id));
+export const getThread = run((req) => forum.getThread(req.params.id, req.user.id));
+export const createThread = run(async (req) => ({ status: 201, body: await forum.createThread(req.body, req.user.id) }));
+export const updateThread = run((req) => forum.updateThread(req.params.id, req.body, req.user));
+export const deleteThread = run((req) => forum.deleteThread(req.params.id, req.user));
+export const createReply = run(async (req) => ({ status: 201, body: await forum.createReply(req.params.id, req.body, req.user.id) }));
+export const deleteReply = run((req) => forum.deleteReply(req.params.id, req.user));
+export const voteThread = run((req) => forum.vote('thread', req.params.id, req.user.id));
+export const unvoteThread = run((req) => forum.unvote('thread', req.params.id, req.user.id));
+export const voteReply = run((req) => forum.vote('reply', req.params.id, req.user.id));
+export const unvoteReply = run((req) => forum.unvote('reply', req.params.id, req.user.id));

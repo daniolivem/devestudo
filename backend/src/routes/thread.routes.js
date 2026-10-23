@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
+import * as forum from '../controllers/thread.controller.js';
+const router = Router();
+router.use(authMiddleware);
+router.get('/', forum.listThreads);
+router.post('/', forum.createThread);
+router.get('/:id', forum.getThread);
+router.patch('/:id', forum.updateThread);
+router.delete('/:id', forum.deleteThread);
+router.post('/:id/replies', forum.createReply);
+router.put('/:id/vote', forum.voteThread);
+router.delete('/:id/vote', forum.unvoteThread);
+export default router;
