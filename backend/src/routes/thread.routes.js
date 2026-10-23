@@ -5,6 +5,7 @@ const router = Router();
 router.use(authMiddleware);
 router.get('/', forum.listThreads);
 router.post('/', forum.createThread);
+router.get('/:id/replies', forum.listReplies);
 router.get('/:id', forum.getThread);
 router.patch('/:id', forum.updateThread);
 router.delete('/:id', forum.deleteThread);
