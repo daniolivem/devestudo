@@ -2,10 +2,14 @@ import * as threads from '../repositories/thread.repository.js';
 import * as replies from '../repositories/reply.repository.js';
 import * as votes from '../repositories/vote.repository.js';
 
+const MAX_TITLE_LENGTH = 100;
+const MAX_CONTENT_LENGTH = 2000;
+const DEFAULT_PAGE_SIZE = 20;
+
 const fail = (message, statusCode) => Object.assign(new Error(message), { statusCode });
 const pageParams = (query) => ({
     page: Math.max(1, Number.parseInt(query.page, 10) || 1),
-    limit: Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 10)),
+    limit: Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || DEFAULT_PAGE_SIZE)),
 });
 const orderByFor = (query) => {
     const sort = String(query.sort || query.orderBy || 'recent').toLowerCase();
@@ -61,15 +65,16 @@ function normalizeTags(tags = []) {
     }));
 }
 
-function validateThreadInput(data, { partial = false } = {}) {
+export function validateThreadInput(data, { partial = false } = {}) {
     const result = {};
     if (!partial || data.title !== undefined) {
         if (typeof data.title !== 'string' || !data.title.trim()) throw fail('Título é obrigatório', 400);
-        if (data.title.trim().length > 100) throw fail('Título deve ter no máximo 100 caracteres', 400);
+        if (data.title.trim().length > MAX_TITLE_LENGTH) throw fail(`Título deve ter no máximo ${MAX_TITLE_LENGTH} caracteres`, 400);
         result.title = data.title.trim();
     }
     if (!partial || data.content !== undefined) {
         if (typeof data.content !== 'string' || !data.content.trim()) throw fail('Conteúdo é obrigatório', 400);
+        if (data.content.trim().length > MAX_CONTENT_LENGTH) throw fail(`Conteúdo deve ter no máximo ${MAX_CONTENT_LENGTH} caracteres`, 400);
         result.content = data.content.trim();
     }
     if (!partial || data.tags !== undefined) result.threadCategories = { ...(partial ? { deleteMany: {} } : {}), create: normalizeTags(data.tags) };
@@ -152,23 +157,33 @@ export async function deleteReply(id, user) {
 }
 
 export async function vote(type, id, userId) {
+    let total;
+
     if (type === 'thread') {
         if (!await threads.findThreadId(id)) throw fail('Tópico não encontrado', 404);
         await votes.addThreadVote(id, userId);
+        total = await votes.countThreadVotes(id);
     } else {
         if (!await replies.findReplyId(id)) throw fail('Resposta não encontrada', 404);
         await votes.addReplyVote(id, userId);
+        total = await votes.countReplyVotes(id);
     }
-    return { message: 'Voto registrado com sucesso' };
+
+    return { message: 'Voto registrado com sucesso', votes: total };
 }
 
 export async function unvote(type, id, userId) {
+    let total;
+
     if (type === 'thread') {
         if (!await threads.findThreadId(id)) throw fail('Tópico não encontrado', 404);
         await votes.removeThreadVote(id, userId);
+        total = await votes.countThreadVotes(id);
     } else {
         if (!await replies.findReplyId(id)) throw fail('Resposta não encontrada', 404);
         await votes.removeReplyVote(id, userId);
+        total = await votes.countReplyVotes(id);
     }
-    return { message: 'Voto removido com sucesso' };
+
+    return { message: 'Voto removido com sucesso', votes: total };
 }

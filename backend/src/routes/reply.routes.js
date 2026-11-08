@@ -23,6 +23,20 @@ router.use(forumAuthMiddleware, authorizeRoles('STUDENT', 'MENTOR', 'ADMIN'));
  *       403: { description: Apenas o autor ou um administrador pode excluir }
  *       404: { description: Resposta não encontrada }
  * /api/replies/{id}/vote:
+ *   post:
+ *     summary: Alias de compatibilidade para votar na resposta
+ *     description: Mesmo comportamento de PUT /api/replies/{id}/vote.
+ *     tags: [Fórum]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200: { description: Voto registrado e contagem atualizada retornada }
+ *       401: { description: Token ausente ou inválido }
+ *       404: { description: Resposta não encontrada }
  *   put:
  *     summary: Vota na resposta autenticada
  *     tags: [Fórum]
@@ -33,7 +47,7 @@ router.use(forumAuthMiddleware, authorizeRoles('STUDENT', 'MENTOR', 'ADMIN'));
  *         required: true
  *         schema: { type: string, format: uuid }
  *     responses:
- *       200: { description: Voto registrado; votos duplicados são impedidos }
+ *       200: { description: Voto registrado; contagem atualizada retornada; votos duplicados são impedidos }
  *       401: { description: Token ausente ou inválido }
  *       404: { description: Resposta não encontrada }
  *   delete:
@@ -46,11 +60,12 @@ router.use(forumAuthMiddleware, authorizeRoles('STUDENT', 'MENTOR', 'ADMIN'));
  *         required: true
  *         schema: { type: string, format: uuid }
  *     responses:
- *       200: { description: Voto removido }
+ *       200: { description: Voto removido; contagem atualizada retornada }
  *       401: { description: Token ausente ou inválido }
  *       404: { description: Resposta não encontrada }
  */
 router.delete('/:id', forum.deleteReply);
 router.put('/:id/vote', forum.voteReply);
+router.post('/:id/vote', forum.voteReply);
 router.delete('/:id/vote', forum.unvoteReply);
 export default router;

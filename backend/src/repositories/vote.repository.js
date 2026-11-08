@@ -12,6 +12,10 @@ export function removeThreadVote(threadId, userId) {
     return prisma.threadVote.deleteMany({ where: { threadId, userId } });
 }
 
+export function countThreadVotes(threadId) {
+    return prisma.threadVote.count({ where: { threadId } });
+}
+
 export function addReplyVote(replyId, userId) {
     return prisma.replyVote.upsert({
         where: { replyId_userId: { replyId, userId } },
@@ -22,4 +26,8 @@ export function addReplyVote(replyId, userId) {
 
 export function removeReplyVote(replyId, userId) {
     return prisma.replyVote.deleteMany({ where: { replyId, userId } });
+}
+
+export function countReplyVotes(replyId) {
+    return prisma.replyVote.count({ where: { replyId } });
 }

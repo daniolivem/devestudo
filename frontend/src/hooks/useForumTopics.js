@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import * as forum from '../services/forumService';
 
-export function useForumTopics({ search = '', tag = '', page = 1, limit = 10 } = {}) {
+export function useForumTopics({ search = '', tag = '', page = 1, limit = 20 } = {}) {
   const [topics, setTopics] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);

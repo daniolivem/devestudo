@@ -66,7 +66,7 @@ const swaggerDefinition = {
                 required: ['title', 'content'],
                 properties: {
                     title: { type: 'string', maxLength: 100 },
-                    content: { type: 'string' },
+                    content: { type: 'string', maxLength: 2000 },
                     tags: { type: 'array', maxItems: 3, items: { type: 'string', maxLength: 100 } },
                 },
             },
@@ -75,7 +75,7 @@ const swaggerDefinition = {
                 minProperties: 1,
                 properties: {
                     title: { type: 'string', maxLength: 100 },
-                    content: { type: 'string' },
+                    content: { type: 'string', maxLength: 2000 },
                     tags: { type: 'array', maxItems: 3, items: { type: 'string', maxLength: 100 } },
                 },
             },

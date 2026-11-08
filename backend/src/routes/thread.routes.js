@@ -25,7 +25,8 @@ router.use(forumAuthMiddleware, authorizeRoles('STUDENT', 'MENTOR', 'ADMIN'));
  *         schema: { type: integer, minimum: 1, default: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+ *         schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+ *         description: Quantidade de tópicos por página (padrão de 20).
  *       - in: query
  *         name: sort
  *         schema: { type: string, enum: [recent, oldest, votes, replies], default: recent }
@@ -131,7 +132,8 @@ router.post('/', forum.createThread);
  *         schema: { type: integer, minimum: 1, default: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+ *         schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+ *         description: Quantidade de respostas por página (padrão de 20).
  *     responses:
  *       200:
  *         description: Página de respostas
@@ -172,7 +174,47 @@ router.post('/:id/replies', forum.createReply);
 
 /**
  * @swagger
+ * /api/threads/{id}/respostas:
+ *   post:
+ *     summary: Alias de compatibilidade para criar resposta no tópico
+ *     description: Mesmo comportamento de POST /api/threads/{id}/replies.
+ *     tags: [Fórum]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { $ref: '#/components/schemas/ForumReplyInput' }
+ *     responses:
+ *       201: { description: Resposta criada; o autor é obtido do token }
+ *       400: { description: Conteúdo inválido }
+ *       401: { description: Token ausente ou inválido }
+ *       404: { description: Tópico não encontrado }
+ */
+router.post('/:id/respostas', forum.createReply);
+
+/**
+ * @swagger
  * /api/threads/{id}/vote:
+ *   post:
+ *     summary: Alias de compatibilidade para votar no tópico
+ *     description: Mesmo comportamento de PUT /api/threads/{id}/vote.
+ *     tags: [Fórum]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200: { description: Voto registrado e contagem atualizada retornada }
+ *       401: { description: Token ausente ou inválido }
+ *       404: { description: Tópico não encontrado }
  *   put:
  *     summary: Vota no tópico autenticado
  *     tags: [Fórum]
@@ -183,7 +225,7 @@ router.post('/:id/replies', forum.createReply);
  *         required: true
  *         schema: { type: string, format: uuid }
  *     responses:
- *       200: { description: Voto registrado; votos duplicados são impedidos }
+ *       200: { description: Voto registrado; contagem atualizada retornada; votos duplicados são impedidos }
  *       401: { description: Token ausente ou inválido }
  *       404: { description: Tópico não encontrado }
  *   delete:
@@ -196,10 +238,11 @@ router.post('/:id/replies', forum.createReply);
  *         required: true
  *         schema: { type: string, format: uuid }
  *     responses:
- *       200: { description: Voto removido }
+ *       200: { description: Voto removido; contagem atualizada retornada }
  *       401: { description: Token ausente ou inválido }
  *       404: { description: Tópico não encontrado }
  */
 router.put('/:id/vote', forum.voteThread);
+router.post('/:id/vote', forum.voteThread);
 router.delete('/:id/vote', forum.unvoteThread);
 export default router;

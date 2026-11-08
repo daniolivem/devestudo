@@ -9,7 +9,7 @@ import { useForumTopics } from '../../hooks/useForumTopics';
 import { forumTags, getErrorMessage, listForumTags } from '../../services/forumService';
 import { useAuthSession } from '../../hooks/useAuthSession';
 
-const itemsPerPage = 10;
+const itemsPerPage = 20;
 const displayTags = (tags) => (Array.isArray(tags) ? tags : []).map((tag) => typeof tag === 'string' ? tag : tag.name);
 const interactionHours = (value) => Math.max(0, Math.floor((Date.now() - new Date(value || Date.now()).getTime()) / 3600000));
 

@@ -41,7 +41,7 @@ export default function TopicFormModal({ title, subtitle, submitLabel, initialTo
 
           <div className="input-group">
             <label>Título</label>
-            <input name="title" defaultValue={initialTopic.title || ""} placeholder="Ex: Como estudar React Hooks?" />
+            <input name="title" defaultValue={initialTopic.title || ""} placeholder="Ex: Como estudar React Hooks?" maxLength={100} required />
           </div>
 
           <div className="input-group">
@@ -51,6 +51,8 @@ export default function TopicFormModal({ title, subtitle, submitLabel, initialTo
               defaultValue={initialTopic.content || ""}
               placeholder="Descreva sua dúvida ou discussão..."
               rows="6"
+              maxLength={2000}
+              required
             />
           </div>
 
