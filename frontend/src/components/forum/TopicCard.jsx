@@ -17,11 +17,11 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
       <div>
         <h2 className="topic-title">{topic.title}</h2>
         <p className="topic-meta">
-          <span>por {topic.author}</span>
+          <span>por {topic.author?.name || topic.author || 'Usuário'}</span>
           <span>•</span>
           <span>Última interação {formatLastInteraction(topic.lastInteractionHours)}</span>
           <span>•</span>
-          <span>{topic.replies} respostas</span>
+          <span>{topic.repliesCount} respostas</span>
           {isMentor && topic.createdByCurrentMentor && (
             <>
               <span>•</span>
@@ -82,7 +82,7 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
           </div>
         ) : (
           <p className="topic-replies mini-meta">
-            {topic.replies}
+            {topic.repliesCount}
             <br />
             respostas
           </p>

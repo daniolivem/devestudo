@@ -9,9 +9,9 @@ import * as forum from '../../services/forumService';
 import { useAuthSession } from '../../hooks/useAuthSession';
 
 const hoursSince = (date) => Math.max(0, Math.floor((Date.now() - new Date(date || Date.now()).getTime()) / 3600000));
-const normalizeReply = (reply) => ({ ...reply, author: reply.author || reply.user?.name || 'Usuário', time: reply.time || reply.createdAt, votes: reply.votes ?? 0 });
+const normalizeReply = (reply) => ({ ...reply, time: reply.createdAt, votes: reply.votes ?? 0 });
 export default function Topic() {
-  const { topicSlug: id } = useParams();
+  const { topicId: id } = useParams();
   const navigate = useNavigate();
   const { user: sessionUser, loading: sessionLoading } = useAuthSession();
   const isAdmin = sessionUser?.role === 'ADMIN';
@@ -21,6 +21,7 @@ export default function Topic() {
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [availableTags, setAvailableTags] = useState([]);
 
   const load = useCallback(async () => {
     setLoading(true); setError('');
@@ -32,9 +33,10 @@ export default function Topic() {
     const request = window.setTimeout(() => { load(); }, 0);
     return () => window.clearTimeout(request);
   }, [load]);
+  useEffect(() => { forum.listForumTags().then(setAvailableTags).catch(() => {}); }, []);
 
   async function handleReply(e) { e.preventDefault(); const form=e.currentTarget; const content=String(new FormData(form).get('content') || '').trim(); if (!content) return; setBusy(true); setError(''); try { await forum.createReply(id, content); form.reset(); await load(); } catch(err) { setError(forum.getErrorMessage(err)); } finally { setBusy(false); } }
-  async function handleUpdate(e) { e.preventDefault(); const fd=new FormData(e.currentTarget); const payload={title:String(fd.get('title')||'').trim(),content:String(fd.get('content')||'').trim(),tags:topic.tags}; if (!payload.title || !payload.content) return; setBusy(true); try { await forum.updateTopic(id,payload); setIsEditing(false); await load(); } catch(err) { setError(forum.getErrorMessage(err)); } finally { setBusy(false); } }
+  async function handleUpdate(e) { e.preventDefault(); const fd=new FormData(e.currentTarget); const payload={title:String(fd.get('title')||'').trim(),content:String(fd.get('content')||'').trim(),tags:fd.getAll('tags').map(String)}; if (!payload.title || !payload.content) return; setBusy(true); try { await forum.updateTopic(id,payload); setIsEditing(false); await load(); } catch(err) { setError(forum.getErrorMessage(err)); } finally { setBusy(false); } }
   async function handleDeleteTopic() { if (!window.confirm('Excluir este tópico?')) return; setBusy(true); try { await forum.deleteTopic(id); navigate('/forum', { replace:true }); } catch(err) { setError(forum.getErrorMessage(err)); setBusy(false); } }
   async function handleDeleteReply(reply) { setBusy(true); try { await forum.deleteReply(reply.id); await load(); } catch(err) { setError(forum.getErrorMessage(err)); } finally { setBusy(false); } }
   async function handleVote(item, kind) { try { if (item.hasVoted) { if (kind==='thread') await forum.removeThreadVote(item.id); else await forum.removeReplyVote(item.id); } else if (kind==='thread') await forum.voteOnThread(item.id); else await forum.voteOnReply(item.id); await load(); } catch(err) { setError(forum.getErrorMessage(err)); } }
@@ -46,8 +48,8 @@ export default function Topic() {
   return <Layout>
     <header className="page-header topic-detail-header"><Button onClick={() => navigate('/forum')}>Voltar ao fórum</Button></header>
     {error && <p role="alert">{error}</p>}
-    <article className="card topic-detail"><div className="topic-detail-title-row"><h1 className="page-title">{topic.title}</h1>{canManageTopic && <div className="forum-admin-actions"><Button className="btn--small" onClick={() => setIsEditing(true)}>Editar</Button><Button className="btn--small" disabled={busy} onClick={handleDeleteTopic}>Excluir tópico</Button></div>}</div><p className="topic-meta"><span>por {topic.author || topic.user?.name}</span><span>•</span><span>Última interação {formatLastInteraction(topic.lastInteractionHours)}</span><span>•</span><span>{replies.length} respostas</span></p><VoteButton count={topic.votes || 0} hasVoted={topic.hasVoted} inline onClick={() => handleVote(topic,'thread')} />{topic.tags.length>0 && <div className="chip-list topic-detail-tags">{topic.tags.map((tag)=><span className="chip" key={tag}>{tag}</span>)}</div>}<p className="topic-detail-content">{topic.content}</p></article>
-    {canManageTopic && isEditing && <section className="card reply-form-card"><h2>Editar tópico</h2><form className="modal-form" onSubmit={handleUpdate}><div className="input-group"><label>Título</label><input name="title" defaultValue={topic.title} required /></div><div className="input-group"><label>Conteúdo</label><textarea name="content" defaultValue={topic.content} rows="6" required /></div><div className="modal-actions"><Button onClick={() => setIsEditing(false)}>Cancelar</Button><Button className="btn--primary" type="submit" disabled={busy}>Salvar alterações</Button></div></form></section>}
+    <article className="card topic-detail"><div className="topic-detail-title-row"><h1 className="page-title">{topic.title}</h1>{canManageTopic && <div className="forum-admin-actions"><Button className="btn--small" onClick={() => setIsEditing(true)}>Editar</Button><Button className="btn--small" disabled={busy} onClick={handleDeleteTopic}>Excluir tópico</Button></div>}</div><p className="topic-meta"><span>por {topic.author?.name || 'Usuário'}</span><span>•</span><span>Última interação {formatLastInteraction(topic.lastInteractionHours)}</span><span>•</span><span>{topic.repliesCount ?? replies.length} respostas</span></p><VoteButton count={topic.votes || 0} hasVoted={topic.hasVoted} inline onClick={() => handleVote(topic,'thread')} />{topic.tags.length>0 && <div className="chip-list topic-detail-tags">{topic.tags.map((tag)=><span className="chip" key={tag}>{tag}</span>)}</div>}<p className="topic-detail-content">{topic.content}</p></article>
+    {canManageTopic && isEditing && <section className="card reply-form-card"><h2>Editar tópico</h2><form className="modal-form" onSubmit={handleUpdate}><div className="input-group"><label>Título</label><input name="title" defaultValue={topic.title} required /></div><div className="input-group"><label>Conteúdo</label><textarea name="content" defaultValue={topic.content} rows="6" required /></div><fieldset className="tag-fieldset"><legend>Tecnologias</legend><div className="tag-options">{availableTags.map((tag)=><label className="tag-option" key={tag}><input type="checkbox" name="tags" value={tag} defaultChecked={topic.tags.includes(tag)} /><span>{tag}</span></label>)}</div></fieldset><div className="modal-actions"><Button onClick={() => setIsEditing(false)}>Cancelar</Button><Button className="btn--primary" type="submit" disabled={busy}>Salvar alterações</Button></div></form></section>}
     <section className="topic-replies-section"><h2>Respostas</h2>{replies.length===0 ? <p>Ainda não há respostas.</p> : <div className="stack">{replies.map((reply)=><ReplyCard key={reply.id} reply={reply} isAdmin={isAdmin || reply.userId === sessionUser?.id} onDelete={()=>handleDeleteReply(reply)} onUpvote={()=>handleVote(reply,'reply')} />)}</div>}</section>
     <section className="card reply-form-card"><h2>Adicionar resposta</h2><form className="modal-form" onSubmit={handleReply}><div className="input-group"><label>Resposta</label><textarea name="content" placeholder="Escreva sua contribuição..." rows="5" required /></div><div className="modal-actions"><Button className="btn--primary" type="submit" disabled={busy}>Responder</Button></div></form></section>
   </Layout>;
