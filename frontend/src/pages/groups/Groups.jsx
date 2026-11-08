@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import Button from "../../components/ui/Button";
 import Pagination from "../../components/ui/Pagination";
@@ -8,6 +8,7 @@ import GroupCard from "../../components/groups/GroupCard";
 import GroupFormModal from "../../components/groups/GroupFormModal";
 import GroupRequestModal from "../../components/groups/GroupRequestModal";
 import { useGroups } from "../../hooks/useGroups";
+import { useAuthSession } from "../../hooks/useAuthSession";
 
 const itemsPerPage = 10;
 
@@ -31,16 +32,18 @@ function GroupsFilterBar({ admin = false }) {
 }
 
 export default function Groups() {
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get("role");
-  const isAdmin = role === "admin";
-  const isMentor = role === "mentor";
+  const { user, loading } = useAuthSession();
+  const isAdmin = user?.role === "ADMIN";
+  const isMentor = user?.role === "MENTOR";
   const [requestedGroup, setRequestedGroup] = useState(null);
   const [editingGroup, setEditingGroup] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const { groups, saveGroup, deleteGroup } = useGroups({ isMentor });
   const startIndex = (currentPage - 1) * itemsPerPage;
   const visibleAdminGroups = groups.slice(startIndex, startIndex + itemsPerPage);
+
+  if (loading) return <Layout><p role="status">Validando sessão…</p></Layout>;
+  if (!user) return <Navigate to="/" replace />;
 
   function handleSaveGroup(groupPayload) {
     saveGroup(groupPayload, editingGroup);

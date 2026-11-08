@@ -177,9 +177,13 @@ Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.d
 
 #### Sistema de votos (OBRIGATÓRIO):
 
-- Votos são aplicados em respostas
-- Cada resposta possui contagem de votos 
-- Deve impedir múltiplos votos indevidos pelo mesmo usuário
+- Votos são registrados individualmente em tópicos e respostas, associados ao usuário autenticado
+- Cada usuário pode votar uma vez em cada tópico ou resposta; a chave composta no banco impede duplicidade
+- Alunos, mentores e administradores autenticados podem responder e votar
+- Apenas o autor ou um administrador pode excluir uma resposta
+- Apenas o autor ou um administrador pode editar/excluir um tópico; mentores podem gerenciar os próprios tópicos
+- A API deriva o usuário e a role do token validado e consulta a role atual no banco
+- Parâmetros de URL como `?role=admin` e `?role=mentor` não concedem permissões
 
 
 #### Resposta deve conter:

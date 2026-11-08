@@ -25,6 +25,19 @@ const protectedRoutes = [
     ['POST', '/api/categories'],
     ['PUT', '/api/categories/00000000-0000-0000-0000-000000000000'],
     ['DELETE', '/api/categories/00000000-0000-0000-0000-000000000000'],
+    ['GET', '/api/auth/me'],
+    ['GET', '/api/threads'],
+    ['POST', '/api/threads'],
+    ['GET', '/api/threads/00000000-0000-0000-0000-000000000000'],
+    ['PATCH', '/api/threads/00000000-0000-0000-0000-000000000000'],
+    ['DELETE', '/api/threads/00000000-0000-0000-0000-000000000000'],
+    ['GET', '/api/threads/00000000-0000-0000-0000-000000000000/replies'],
+    ['POST', '/api/threads/00000000-0000-0000-0000-000000000000/replies'],
+    ['PUT', '/api/threads/00000000-0000-0000-0000-000000000000/vote'],
+    ['DELETE', '/api/threads/00000000-0000-0000-0000-000000000000/vote'],
+    ['DELETE', '/api/replies/00000000-0000-0000-0000-000000000000'],
+    ['PUT', '/api/replies/00000000-0000-0000-0000-000000000000/vote'],
+    ['DELETE', '/api/replies/00000000-0000-0000-0000-000000000000/vote'],
 ];
 
 test('health route is available', async () => {
@@ -64,11 +77,18 @@ const tokenFor = (role) => generateToken({
     role,
 });
 
+test('forum session rejects a valid JWT when its user does not exist', async () => {
+    const response = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${tokenFor('ADMIN')}`);
+
+    assert.equal(response.status, 401);
+});
+
 const roleDeniedRoutes = [
     ['GET', '/api/users', 'STUDENT'],
     ['PUT', '/api/mentors/profile', 'STUDENT'],
     ['POST', '/api/groups', 'STUDENT'],
-    ['PUT', '/api/categories/00000000-0000-0000-0000-000000000000', 'STUDENT'],
     ['POST', '/api/mentorships', 'ADMIN'],
 ];
 

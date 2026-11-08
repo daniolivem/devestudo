@@ -14,7 +14,7 @@ export default function Login() {
       const { data } = await api.post("/auth/login", { email: formData.get("email"), password: formData.get("password") });
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      navigate(data.user.role === "ADMIN" ? "/dashboard?role=admin" : data.user.role === "MENTOR" ? "/dashboard?role=mentor" : "/dashboard");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Não foi possível entrar.");
     }

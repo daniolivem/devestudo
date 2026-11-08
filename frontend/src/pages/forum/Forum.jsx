@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import Layout from '../../components/layout/Layout';
 import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
@@ -8,6 +8,7 @@ import TopicFormModal from '../../components/forum/TopicFormModal';
 import { useForumTopics } from '../../hooks/useForumTopics';
 import { forumTags, getErrorMessage, listForumTags } from '../../services/forumService';
 import { createTopicSlug } from '../../utils/forum';
+import { useAuthSession } from '../../hooks/useAuthSession';
 
 const itemsPerPage = 10;
 const displayTags = (tags) => (Array.isArray(tags) ? tags : []).map((tag) => typeof tag === 'string' ? tag : tag.name);
@@ -15,13 +16,9 @@ const interactionHours = (value) => Math.max(0, Math.floor((Date.now() - new Dat
 
 export default function Forum() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get('role');
-  let sessionUser = null;
-  try { sessionUser = JSON.parse(localStorage.getItem('user') || 'null'); } catch { sessionUser = null; }
+  const { user: sessionUser, loading: sessionLoading } = useAuthSession();
   const isAdmin = sessionUser?.role === 'ADMIN';
   const isMentor = sessionUser?.role === 'MENTOR';
-  const roleQuery = isAdmin || isMentor ? `?role=${role}` : '';
   const [search, setSearch] = useState('');
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState(forumTags);
@@ -33,7 +30,7 @@ export default function Forum() {
 
   useEffect(() => { listForumTags().then(setTags).catch(() => {}); }, []);
   async function handleCreate(payload) {
-    try { const created = await createTopic(payload); setIsModalOpen(false); navigate(`/forum/${created.id || createTopicSlug(created.title)}${roleQuery}`); }
+    try { const created = await createTopic(payload); setIsModalOpen(false); navigate(`/forum/${created.id || createTopicSlug(created.title)}`); }
     catch (err) { setActionError(getErrorMessage(err)); }
   }
   async function handleUpdate(payload) {
@@ -44,7 +41,10 @@ export default function Forum() {
     try { await deleteTopic(id); setCurrentPage((p) => Math.min(p, Math.max(1, Math.ceil((total - 1) / itemsPerPage)))); }
     catch (err) { setActionError(getErrorMessage(err)); }
   }
-  function openTopic(topic) { navigate(`/forum/${topic.id || createTopicSlug(topic.title)}${roleQuery}`); }
+  function openTopic(topic) { navigate(`/forum/${topic.id || createTopicSlug(topic.title)}`); }
+
+  if (sessionLoading) return <Layout><p role="status">Validando sessão…</p></Layout>;
+  if (!sessionUser) return <Navigate to="/" replace />;
 
   return <Layout>
     <header className="page-header forum-header"><div><h1 className="page-title">{isAdmin ? 'Moderação de Fórum' : 'Fórum Temático'}</h1><p className="page-subtitle">{isAdmin ? 'Gerencie tópicos, conteúdos e respostas da comunidade' : isMentor ? 'Crie tópicos e participe das discussões da comunidade' : 'Compartilhe dúvidas e discussões com a comunidade'}</p></div><Button className="btn--primary" onClick={() => setIsModalOpen(true)}>Criar novo fórum</Button></header>

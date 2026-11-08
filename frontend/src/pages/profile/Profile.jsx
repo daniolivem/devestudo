@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import { useAuthSession } from "../../hooks/useAuthSession";
 
 const technologies = [
   "React",
@@ -218,9 +219,11 @@ function PasswordSection() {
 }
 
 export default function Profile() {
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get("role");
-  const canManageMentorPreferences = role === "mentor" || role === "admin";
+  const { user, loading } = useAuthSession();
+  const canManageMentorPreferences = user?.role === "MENTOR" || user?.role === "ADMIN";
+
+  if (loading) return <Layout><p role="status">Validando sessão…</p></Layout>;
+  if (!user) return <Navigate to="/" replace />;
 
   return (
     <Layout>
@@ -277,7 +280,7 @@ export default function Profile() {
             </div>
           </section>
 
-          {canManageMentorPreferences && <MentorPreferencesSection role={role} />}
+          {canManageMentorPreferences && <MentorPreferencesSection role={user.role.toLowerCase()} />}
         </div>
 
         <div className="profile-actions">

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { login, register } from '../controllers/auth.controller.js';
+import { login, register, getCurrentSession } from '../controllers/auth.controller.js';
+import { forumAuthMiddleware } from '../middlewares/forum-auth.middleware.js';
 
 const router = Router();
 
@@ -72,5 +73,7 @@ router.post('/login', login);
  *         description: Dados invalidos
  */
 router.post('/register', register);
+
+router.get('/me', forumAuthMiddleware, getCurrentSession);
 
 export default router;
