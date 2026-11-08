@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
@@ -6,8 +7,22 @@ import { swaggerSpec } from './config/swagger.js';
 
 const app = express();
 
-// Middlewares globais
-app.use(cors());
+const configuredOrigins = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+const developmentOrigins = process.env.NODE_ENV === 'production'
+    ? []
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+const allowedOrigins = new Set([...developmentOrigins, ...configuredOrigins]);
+
+// Permite origens configuradas; chamadas sem Origin (ex.: health checks) não
+// dependem de CORS. CORS não substitui autenticação nem autorização da API.
+app.use(cors({
+    origin(origin, callback) {
+        callback(null, !origin || allowedOrigins.has(origin));
+    },
+}));
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
