@@ -41,6 +41,8 @@ const protectedRoutes = [
     ['PUT', '/api/replies/00000000-0000-0000-0000-000000000000/vote'],
     ['POST', '/api/replies/00000000-0000-0000-0000-000000000000/vote'],
     ['DELETE', '/api/replies/00000000-0000-0000-0000-000000000000/vote'],
+    ['POST', '/api/reply'],
+    ['POST', '/api/vote'],
 ];
 
 test('health route is available', async () => {

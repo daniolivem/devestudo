@@ -8,6 +8,7 @@ import mentorshipRoutes from './mentorship.routes.js';
 import categoryRoutes from './category.routes.js';
 import threadRoutes from './thread.routes.js';
 import replyRoutes from './reply.routes.js';
+import forumCompatRoutes from './forum-compat.routes.js';
 
 const router = Router();
 
@@ -49,5 +50,8 @@ router.use('/categories', categoryRoutes);
 // reply deletion and reply voting are exposed under /replies.
 router.use('/threads', threadRoutes);
 router.use('/replies', replyRoutes);
+
+// Compatibility routes documented in the project README.
+router.use('/', forumCompatRoutes);
 
 export default router;

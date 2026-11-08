@@ -166,7 +166,7 @@ Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.d
 
 - **Usuário** → **Thread** (1:N)
 - **Thread** → **Resposta** (1:N)
-- **Resposta** possui campo `votes` para contagem de votos
+- **Thread** e **Resposta** possuem votos individuais (`ThreadVote` e `ReplyVote`)
 
 
 #### Regras obrigatórias:
@@ -191,6 +191,30 @@ Para mais detalhes, consulte a [documentação oficial do Vite](https://vitejs.d
 - `userId`
 - `threadId`
 - `content`
+
+#### Rotas do Fórum (API)
+
+Todas exigem JWT e aceitam as roles `STUDENT`, `MENTOR` e `ADMIN`.
+
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `GET` | `/api/threads` | Lista tópicos com paginação (20 por página por padrão), busca e filtro por tag. |
+| `POST` | `/api/threads` | Cria tópico. Título de até 100 e conteúdo de até 2.000 caracteres. |
+| `GET` | `/api/threads/:id` | Detalha o tópico com suas respostas. |
+| `PATCH` | `/api/threads/:id` | Edita título, conteúdo e/ou tags. Autor ou administrador. |
+| `DELETE` | `/api/threads/:id` | Exclui o tópico. Autor ou administrador. |
+| `GET` | `/api/threads/:id/replies` | Lista as respostas com paginação. |
+| `POST` | `/api/threads/:id/replies` | Cria uma resposta no tópico. |
+| `POST` | `/api/threads/:id/respostas` | Alias de compatibilidade para criar resposta. |
+| `PUT` ou `POST` | `/api/threads/:id/vote` | Registra o voto do usuário autenticado no tópico. |
+| `DELETE` | `/api/threads/:id/vote` | Remove o voto do usuário autenticado no tópico. |
+| `PUT` ou `POST` | `/api/replies/:id/vote` | Registra o voto do usuário autenticado na resposta. |
+| `DELETE` | `/api/replies/:id/vote` | Remove o voto do usuário autenticado na resposta. |
+| `DELETE` | `/api/replies/:id` | Exclui a resposta. Autor ou administrador. |
+| `POST` | `/api/reply` | Compatibilidade: cria resposta com `{ "threadId": "...", "content": "..." }`. |
+| `POST` | `/api/vote` | Compatibilidade: vota com `{ "threadId": "..." }` ou `{ "replyId": "..." }`. |
+
+Os votos são individuais e a chave composta do banco impede duplicidade. As rotas de voto retornam a contagem atualizada no campo `votes`.
 
 ### Grupos
 
