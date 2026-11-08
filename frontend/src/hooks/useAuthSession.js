@@ -7,6 +7,13 @@ export function useAuthSession() {
 
   useEffect(() => {
     let active = true;
+    const handleUnauthorized = () => {
+      if (active) {
+        setUser(null);
+        setLoading(false);
+      }
+    };
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
     const request = window.setTimeout(async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -32,6 +39,7 @@ export function useAuthSession() {
     return () => {
       active = false;
       window.clearTimeout(request);
+      window.removeEventListener('auth:unauthorized', handleUnauthorized);
     };
   }, []);
 

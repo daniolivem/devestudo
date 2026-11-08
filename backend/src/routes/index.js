@@ -45,6 +45,8 @@ router.use('/mentorships', mentorshipRoutes);
 
 // Category routes
 router.use('/categories', categoryRoutes);
+// Forum API: topics and topic replies share the /threads route tree;
+// reply deletion and reply voting are exposed under /replies.
 router.use('/threads', threadRoutes);
 router.use('/replies', replyRoutes);
 

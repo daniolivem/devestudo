@@ -10,4 +10,24 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const status = error.response?.status;
+        const serverMessage = error.response?.data?.message;
+
+        if (serverMessage) error.message = serverMessage;
+
+        if (status === 401 && typeof window !== 'undefined') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.dispatchEvent(new Event('auth:unauthorized'));
+        }
+
+        // 400 validation and 403 permission errors keep the backend message
+        // available through both error.message and error.response.data.message.
+        return Promise.reject(error);
+    },
+);
+
 export default api;

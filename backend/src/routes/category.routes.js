@@ -19,7 +19,17 @@ const router = Router();
  *     security: [{ bearerAuth: [] }]
  *     responses:
  *       200:
- *         description: Lista de categorias
+ *         description: Categorias disponíveis para as tags dos tópicos.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id: { type: string, format: uuid }
+ *                   name: { type: string }
+ *       401: { description: Token ausente ou inválido }
  */
 router.get('/', forumAuthMiddleware, getCategories);
 
