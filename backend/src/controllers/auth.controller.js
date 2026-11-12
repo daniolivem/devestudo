@@ -37,3 +37,7 @@ export async function register(req, res, next) {
         return next(error);
     }
 }
+
+export function getCurrentSession(req, res) {
+    return res.status(200).json({ user: req.user });
+}

@@ -1,10 +1,32 @@
+import { useState } from "react";
 import Button from "../ui/Button";
 
-export default function MentorshipRequestModal({ mentor, onClose, onConfirm }) {
-  function handleSubmit(e) {
+export default function MentorshipRequestModal({ mentor, onClose, onConfirm, error = "", loading = false }) {
+  const [message, setMessage] = useState("");
+  const [localError, setLocalError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    onConfirm();
+    setLocalError("");
+
+    if (message.length > 500) {
+      setLocalError("A mensagem deve ter no máximo 500 caracteres.");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      await onConfirm(message.trim());
+    } catch {
+      // A mensagem de erro da API é recebida pela prop error.
+    } finally {
+      setSubmitting(false);
+    }
   }
+
+  const isBusy = loading || submitting;
 
   return (
     <div className="modal-backdrop" role="presentation" onClick={onClose}>
@@ -51,13 +73,25 @@ export default function MentorshipRequestModal({ mentor, onClose, onConfirm }) {
         <form className="modal-form" onSubmit={handleSubmit}>
           <div className="input-group">
             <label>Mensagem para o mentor</label>
-            <textarea name="message" placeholder="Conte brevemente o que você quer estudar ou resolver..." rows="5" />
+            <textarea
+              name="message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Conte brevemente o que você quer estudar ou resolver..."
+              rows="5"
+              maxLength={500}
+            />
+            <span className="mini-meta">{message.length}/500</span>
           </div>
 
+          {(localError || error) && <p role="alert">{localError || error}</p>}
+
           <div className="modal-actions">
-            <Button onClick={onClose}>Cancelar</Button>
-            <Button className="btn--primary" type="submit">
-              Solicitar mentoria
+            <Button onClick={onClose} disabled={isBusy}>
+              Cancelar
+            </Button>
+            <Button className="btn--primary" type="submit" disabled={isBusy}>
+              {isBusy ? "Enviando..." : "Solicitar mentoria"}
             </Button>
           </div>
         </form>

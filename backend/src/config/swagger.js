@@ -15,6 +15,95 @@ const swaggerDefinition = {
     ],
     components: {
         schemas: {
+            ForumAuthor: {
+                type: 'object',
+                properties: {
+                    id: { type: 'string', format: 'uuid' },
+                    name: { type: 'string' },
+                    role: { type: 'string', enum: ['STUDENT', 'MENTOR', 'ADMIN'] },
+                    photo: { type: 'string', nullable: true },
+                },
+            },
+            ForumReply: {
+                type: 'object',
+                properties: {
+                    id: { type: 'string', format: 'uuid' },
+                    threadId: { type: 'string', format: 'uuid' },
+                    userId: { type: 'string', format: 'uuid' },
+                    author: { $ref: '#/components/schemas/ForumAuthor' },
+                    content: { type: 'string' },
+                    createdAt: { type: 'string', format: 'date-time' },
+                    updatedAt: { type: 'string', format: 'date-time' },
+                    votes: { type: 'integer' },
+                    hasVoted: { type: 'boolean', description: 'Se o usuário autenticado votou nesta resposta.' },
+                },
+            },
+            ForumThread: {
+                type: 'object',
+                properties: {
+                    id: { type: 'string', format: 'uuid' },
+                    title: { type: 'string' },
+                    content: { type: 'string' },
+                    userId: { type: 'string', format: 'uuid' },
+                    author: { $ref: '#/components/schemas/ForumAuthor' },
+                    tags: { type: 'array', items: { type: 'string' } },
+                    createdAt: { type: 'string', format: 'date-time' },
+                    updatedAt: { type: 'string', format: 'date-time' },
+                    lastInteractionAt: { type: 'string', format: 'date-time' },
+                    repliesCount: { type: 'integer' },
+                    votes: { type: 'integer' },
+                    hasVoted: { type: 'boolean', description: 'Se o usuário autenticado votou neste tópico.' },
+                },
+            },
+            ForumThreadDetail: {
+                allOf: [
+                    { $ref: '#/components/schemas/ForumThread' },
+                    { type: 'object', properties: { replies: { type: 'array', items: { $ref: '#/components/schemas/ForumReply' } } } },
+                ],
+            },
+            ForumThreadInput: {
+                type: 'object',
+                required: ['title', 'content'],
+                properties: {
+                    title: { type: 'string', maxLength: 100 },
+                    content: { type: 'string', maxLength: 2000 },
+                    tags: { type: 'array', maxItems: 3, items: { type: 'string', maxLength: 100 } },
+                },
+            },
+            ForumThreadPatch: {
+                type: 'object',
+                minProperties: 1,
+                properties: {
+                    title: { type: 'string', maxLength: 100 },
+                    content: { type: 'string', maxLength: 2000 },
+                    tags: { type: 'array', maxItems: 3, items: { type: 'string', maxLength: 100 } },
+                },
+            },
+            ForumReplyInput: {
+                type: 'object',
+                required: ['content'],
+                properties: { content: { type: 'string' } },
+            },
+            ForumThreadPage: {
+                type: 'object',
+                properties: {
+                    items: { type: 'array', items: { $ref: '#/components/schemas/ForumThread' } },
+                    total: { type: 'integer' },
+                    page: { type: 'integer' },
+                    limit: { type: 'integer' },
+                    totalPages: { type: 'integer' },
+                },
+            },
+            ForumReplyPage: {
+                type: 'object',
+                properties: {
+                    items: { type: 'array', items: { $ref: '#/components/schemas/ForumReply' } },
+                    total: { type: 'integer' },
+                    page: { type: 'integer' },
+                    limit: { type: 'integer' },
+                    totalPages: { type: 'integer' },
+                },
+            },
             ProfileUpdate: {
                 type: 'object',
                 properties: {
@@ -52,7 +141,9 @@ const swaggerDefinition = {
                     description: { type: 'string' },
                     technology: { type: 'string', example: 'JavaScript' },
                     level: { type: 'string', enum: ['Iniciante', 'Intermediário', 'Avançado'] },
+                    availability: { type: 'string', example: 'Seg-Sex noite' },
                     materialsUrl: { type: 'string', format: 'uri' },
+                    status: { type: 'string', enum: ['ACTIVE', 'CLOSED'] },
                 },
             },
             GroupParticipation: {
@@ -72,7 +163,10 @@ const swaggerDefinition = {
             MentorshipRequest: {
                 type: 'object',
                 required: ['mentorId'],
-                properties: { mentorId: { type: 'string' } },
+                properties: {
+                    mentorId: { type: 'string' },
+                    message: { type: 'string', maxLength: 500 },
+                },
             },
             MentorshipStatus: {
                 type: 'object',
@@ -86,7 +180,26 @@ const swaggerDefinition = {
                 required: ['rating'],
                 properties: {
                     rating: { type: 'integer', minimum: 1, maximum: 5 },
-                    comment: { type: 'string', maxLength: 50 },
+                    comment: { type: 'string', maxLength: 255 },
+                },
+            },
+            AdminUserInput: {
+                type: 'object',
+                required: ['name', 'email', 'password', 'role'],
+                properties: {
+                    name: { type: 'string' },
+                    email: { type: 'string', format: 'email' },
+                    password: { type: 'string', minLength: 8 },
+                    role: { type: 'string', enum: ['STUDENT', 'MENTOR', 'ADMIN'] },
+                },
+            },
+            AdminUserUpdate: {
+                type: 'object',
+                properties: {
+                    name: { type: 'string' },
+                    email: { type: 'string', format: 'email' },
+                    role: { type: 'string', enum: ['STUDENT', 'MENTOR', 'ADMIN'] },
+                    isBlocked: { type: 'boolean' },
                 },
             },
             Category: {

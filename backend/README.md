@@ -15,7 +15,15 @@ API em Express com Prisma conectando no Supabase.
 ```bash
 DATABASE_URL="postgresql://postgres:<senha>@db.<project-ref>.supabase.co:5432/postgres?sslmode=require"
 PORT=3000
+CORS_ORIGINS="https://app.seudominio.com"
 ```
+
+Configure `CORS_ORIGINS` com as origens completas permitidas para o frontend
+(protocolo e domínio, sem caminho), separadas por vírgulas. Em desenvolvimento,
+`http://localhost:5173` e `http://127.0.0.1:5173` são permitidos por padrão.
+Em produção, não há origens padrão: configure a lista explicitamente. Requisições
+sem cabeçalho `Origin`, como health checks, continuam aceitas; CORS não substitui
+JWT nem as permissões verificadas pelas rotas.
 
 ### Configuração do ambiente
 

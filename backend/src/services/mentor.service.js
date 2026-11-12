@@ -2,7 +2,13 @@ import { findAllMentors, updateMentorProfile } from '../repositories/mentor.repo
 import { TECHNOLOGIES } from '../constants/profile.constants.js';
 
 
-export function getMentorsService(technology) {
+export async function getMentorsService(technology) {
+
+    if (technology !== undefined && typeof technology !== 'string') {
+        const error = new Error('Tecnologia inválida');
+        error.statusCode = 400;
+        throw error;
+    }
 
     if (technology !== undefined && technology.trim() === '') {
         const error = new Error('Tecnologia não informada');
@@ -18,7 +24,27 @@ export function getMentorsService(technology) {
         throw error;
     }
 
-    return findAllMentors(technology);
+    const mentors = await findAllMentors(technology);
+
+    return mentors.map(({ mentorSessions, ...mentor }) => {
+        const completedSessions = mentorSessions.filter(
+            (session) => session.status === 'COMPLETED'
+        );
+        const ratings = completedSessions
+            .map((session) => session.rating)
+            .filter((rating) => Number.isInteger(rating));
+
+        const rating = ratings.length
+            ? Number((ratings.reduce((total, value) => total + value, 0) / ratings.length).toFixed(1))
+            : null;
+
+        return {
+            ...mentor,
+            sessions: completedSessions.length,
+            evaluations: ratings.length,
+            rating,
+        };
+    });
 }
 
 export function updateMentorProfileService(

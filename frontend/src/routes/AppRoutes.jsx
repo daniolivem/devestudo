@@ -11,6 +11,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import Register from "../pages/auth/Register";
 import Profile from "../pages/profile/Profile";
 import Users from "../pages/users/Users";
+import Categories from "../pages/categories/Categories";
 
 export default function AppRoutes() {
   return (
@@ -20,11 +21,12 @@ export default function AppRoutes() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forum" element={<Forum />} />
-        <Route path="/forum/:topicSlug" element={<Topic />} />
+        <Route path="/forum/:topicId" element={<Topic />} />
         <Route path="/groups" element={<Groups />} />
         <Route path="/mentors" element={<Mentors />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/users" element={<Users />} />
+        <Route path="/categories" element={<Categories />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
       </Routes>

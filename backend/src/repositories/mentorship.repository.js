@@ -82,6 +82,9 @@ export function findExistingMentorship(mentorId, studentId) {
             mentorId,
             studentId,
         },
+        orderBy: {
+            createdAt: 'desc',
+        },
     });
 }
 

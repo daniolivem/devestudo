@@ -8,63 +8,63 @@ import {
 import { findUserById } from '../repositories/group.repository.js';
 import { validateMentorshipRating } from './feature-checks.service.js';
 
+const fail = (message, statusCode) => Object.assign(new Error(message), { statusCode });
+const ACTIVE_MENTORSHIP_STATUSES = ['REQUESTED', 'APPROVED'];
+
 export async function listMentorshipsService(userId) {
     const user = await findUserById(userId);
 
     if (!user) {
-        const error = new Error('Usuário não encontrado');
-        error.statusCode = 404;
-        throw error;
+        throw fail('Usuário não encontrado', 404);
     }
 
     return findMentorshipsForUser(userId);
 }
 
-export async function createMentorshipRequestService(studentId, mentorId) {
+export async function createMentorshipRequestService(studentId, mentorId, message) {
     if (!studentId || !mentorId) {
-        const error = new Error('Aluno e mentor são obrigatórios');
-        error.statusCode = 400;
-        throw error;
+        throw fail('Aluno e mentor são obrigatórios', 400);
+    }
+
+    if (message !== undefined && message !== null && typeof message !== 'string') {
+        throw fail('A mensagem da mentoria deve ser texto', 400);
+    }
+
+    const normalizedMessage = typeof message === 'string' ? message.trim() : null;
+
+    if (normalizedMessage && normalizedMessage.length > 500) {
+        throw fail('A mensagem da mentoria deve ter no máximo 500 caracteres', 400);
     }
 
     const student = await findUserById(studentId);
     const mentor = await findUserById(mentorId);
 
     if (!student) {
-        const error = new Error('Estudante não encontrado');
-        error.statusCode = 404;
-        throw error;
+        throw fail('Estudante não encontrado', 404);
     }
 
     if (!mentor) {
-        const error = new Error('Mentor não encontrado');
-        error.statusCode = 404;
-        throw error;
+        throw fail('Mentor não encontrado', 404);
     }
 
     if (student.role !== 'STUDENT') {
-        const error = new Error('Apenas estudantes podem solicitar mentoria');
-        error.statusCode = 403;
-        throw error;
+        throw fail('Apenas estudantes podem solicitar mentoria', 403);
     }
 
     if (mentor.role !== 'MENTOR') {
-        const error = new Error('O usuário informado não é um mentor');
-        error.statusCode = 400;
-        throw error;
+        throw fail('O usuário informado não é um mentor', 400);
     }
 
     const existing = await findExistingMentorship(mentorId, studentId);
 
-    if (existing) {
-        const error = new Error('Já existe uma solicitação de mentoria para esse mentor');
-        error.statusCode = 409;
-        throw error;
+    if (existing && ACTIVE_MENTORSHIP_STATUSES.includes(existing.status)) {
+        throw fail('Já existe uma solicitação de mentoria ativa para esse mentor', 409);
     }
 
     return createMentorshipRequest({
         mentorId,
         studentId,
+        message: normalizedMessage,
         status: 'REQUESTED',
     });
 }
@@ -73,51 +73,41 @@ export async function updateMentorshipStatusService(userId, mentorshipId, status
     const mentorship = await findMentorshipById(mentorshipId);
 
     if (!mentorship) {
-        const error = new Error('Solicitação de mentoria não encontrada');
-        error.statusCode = 404;
-        throw error;
+        throw fail('Solicitação de mentoria não encontrada', 404);
     }
 
     if (mentorship.mentorId !== userId && mentorship.studentId !== userId) {
-        const error = new Error('Apenas usuários envolvidos na mentoria podem alterar o status');
-        error.statusCode = 403;
-        throw error;
-    }
-
-    if (status === 'APPROVED' && mentorship.mentorId !== userId) {
-        const error = new Error('Apenas o mentor pode aprovar a mentoria');
-        error.statusCode = 403;
-        throw error;
+        throw fail('Apenas usuários envolvidos na mentoria podem alterar o status', 403);
     }
 
     if (!['APPROVED', 'CANCELLED', 'COMPLETED'].includes(status)) {
-        const error = new Error('Status inválido para a mentoria');
-        error.statusCode = 400;
-        throw error;
+        throw fail('Status inválido para a mentoria', 400);
+    }
+
+    if (['APPROVED', 'COMPLETED'].includes(status) && mentorship.mentorId !== userId) {
+        throw fail('Apenas o mentor pode aprovar ou concluir a mentoria', 403);
+    }
+
+    if (mentorship.status === 'COMPLETED' && status !== 'COMPLETED') {
+        throw fail('Mentorias concluídas não podem ter o status alterado', 400);
     }
 
     return updateMentorshipStatus(mentorshipId, { status });
 }
 
-export async function evaluateMentorshipService(userId, mentorshipId, payload) {
+export async function evaluateMentorshipService(userId, mentorshipId, payload = {}) {
     const mentorship = await findMentorshipById(mentorshipId);
 
     if (!mentorship) {
-        const error = new Error('Solicitação de mentoria não encontrada');
-        error.statusCode = 404;
-        throw error;
+        throw fail('Solicitação de mentoria não encontrada', 404);
     }
 
     if (mentorship.mentorId !== userId && mentorship.studentId !== userId) {
-        const error = new Error('Apenas usuários envolvidos podem avaliar esta mentoria');
-        error.statusCode = 403;
-        throw error;
+        throw fail('Apenas usuários envolvidos podem avaliar esta mentoria', 403);
     }
 
     if (!['APPROVED', 'COMPLETED'].includes(mentorship.status)) {
-        const error = new Error('A mentoria só pode ser avaliada após aprovação');
-        error.statusCode = 400;
-        throw error;
+        throw fail('A mentoria só pode ser avaliada após aprovação', 400);
     }
 
     const { rating, comment } = payload;
@@ -128,4 +118,30 @@ export async function evaluateMentorshipService(userId, mentorshipId, payload) {
         comment: comment ? comment.trim() : null,
         status: 'COMPLETED',
     });
+}
+
+export async function evaluateMentorshipFromBodyService(userId, payload = {}) {
+    const mentorshipId = payload.mentorshipId || payload.mentoriaId || payload.id;
+
+    if (mentorshipId) {
+        return evaluateMentorshipService(userId, mentorshipId, payload);
+    }
+
+    if (!payload.mentorId) {
+        throw fail('Informe o id da mentoria ou o id do mentor', 400);
+    }
+
+    const mentorships = await findMentorshipsForUser(userId);
+    const evaluable = mentorships.find(
+        (mentorship) =>
+            mentorship.studentId === userId &&
+            mentorship.mentorId === payload.mentorId &&
+            ['APPROVED', 'COMPLETED'].includes(mentorship.status)
+    );
+
+    if (!evaluable) {
+        throw fail('Mentoria elegível para avaliação não encontrada', 404);
+    }
+
+    return evaluateMentorshipService(userId, evaluable.id, payload);
 }

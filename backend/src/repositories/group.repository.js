@@ -1,6 +1,6 @@
 import prisma from '../config/database.js';
 
-export function findGroups({ technology, level, status = 'ACTIVE' }) {
+export function findGroups({ technology, level, availability, status = 'ACTIVE' }) {
     const where = {
         status,
     };
@@ -14,6 +14,13 @@ export function findGroups({ technology, level, status = 'ACTIVE' }) {
 
     if (level) {
         where.level = level;
+    }
+
+    if (availability) {
+        where.availability = {
+            contains: availability,
+            mode: 'insensitive',
+        };
     }
 
     return prisma.group.findMany({
@@ -33,6 +40,7 @@ export function findGroups({ technology, level, status = 'ACTIVE' }) {
                 select: {
                     id: true,
                     status: true,
+                    userId: true,
                     user: {
                         select: {
                             id: true,
@@ -88,6 +96,14 @@ export function findGroupMemberByUserAndGroup(userId, groupId) {
     });
 }
 
+export function findGroupMemberById(memberId) {
+    return prisma.groupMember.findUnique({
+        where: {
+            id: memberId,
+        },
+    });
+}
+
 export function createGroup(data) {
     return prisma.group.create({
         data,
@@ -99,6 +115,66 @@ export function createGroup(data) {
                     role: true,
                 },
             },
+            members: {
+                where: {
+                    status: 'APPROVED',
+                },
+                select: {
+                    id: true,
+                    status: true,
+                    userId: true,
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+}
+
+export function updateGroup(groupId, data) {
+    return prisma.group.update({
+        where: {
+            id: groupId,
+        },
+        data,
+        include: {
+            creator: {
+                select: {
+                    id: true,
+                    name: true,
+                    role: true,
+                },
+            },
+            members: {
+                where: {
+                    status: 'APPROVED',
+                },
+                select: {
+                    id: true,
+                    status: true,
+                    userId: true,
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+}
+
+export function deleteGroup(groupId) {
+    return prisma.group.delete({
+        where: {
+            id: groupId,
         },
     });
 }
@@ -120,6 +196,7 @@ export function createGroupMembership(data) {
                     name: true,
                     technology: true,
                     level: true,
+                    availability: true,
                 },
             },
         },
@@ -146,6 +223,14 @@ export function updateGroupMembership(memberId, data) {
                     name: true,
                 },
             },
+        },
+    });
+}
+
+export function deleteGroupMembership(memberId) {
+    return prisma.groupMember.delete({
+        where: {
+            id: memberId,
         },
     });
 }

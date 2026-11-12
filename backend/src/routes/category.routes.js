@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { forumAuthMiddleware } from '../middlewares/forum-auth.middleware.js';
 import { authorizeRoles } from '../middlewares/role.middleware.js';
 import {
     createCategory,
@@ -19,9 +19,19 @@ const router = Router();
  *     security: [{ bearerAuth: [] }]
  *     responses:
  *       200:
- *         description: Lista de categorias
+ *         description: Categorias disponíveis para as tags dos tópicos.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id: { type: string, format: uuid }
+ *                   name: { type: string }
+ *       401: { description: Token ausente ou inválido }
  */
-router.get('/', authMiddleware, getCategories);
+router.get('/', forumAuthMiddleware, getCategories);
 
 /**
  * @swagger
@@ -40,7 +50,7 @@ router.get('/', authMiddleware, getCategories);
  *       201:
  *         description: Categoria criada
  */
-router.post('/', authMiddleware, authorizeRoles('MENTOR', 'ADMIN'), createCategory);
+router.post('/', forumAuthMiddleware, authorizeRoles('MENTOR', 'ADMIN'), createCategory);
 
 /**
  * @swagger
@@ -65,7 +75,7 @@ router.post('/', authMiddleware, authorizeRoles('MENTOR', 'ADMIN'), createCatego
  *       200:
  *         description: Categoria atualizada
  */
-router.put('/:id', authMiddleware, authorizeRoles('ADMIN'), updateCategory);
+router.put('/:id', forumAuthMiddleware, authorizeRoles('ADMIN'), updateCategory);
 
 /**
  * @swagger
@@ -84,6 +94,6 @@ router.put('/:id', authMiddleware, authorizeRoles('ADMIN'), updateCategory);
  *       204:
  *         description: Categoria excluida
  */
-router.delete('/:id', authMiddleware, authorizeRoles('ADMIN'), deleteCategory);
+router.delete('/:id', forumAuthMiddleware, authorizeRoles('ADMIN'), deleteCategory);
 
 export default router;

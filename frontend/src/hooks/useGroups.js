@@ -1,31 +1,93 @@
-import { useState } from "react";
-import { initialGroups } from "../services/groupService";
+import { useCallback, useEffect, useState } from 'react';
+import * as groupService from '../services/groupService';
 
-export function useGroups({ isMentor = false } = {}) {
-  const [groups, setGroups] = useState(initialGroups);
+export function useGroups({ technology = '', level = '', availability = '' } = {}) {
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  function saveGroup(payload, editingGroup = null) {
-    const savedGroup = {
-      title: payload.title,
-      members: editingGroup?.members || 0,
-      time: payload.time || "A definir",
-      description: payload.description,
-      tags: [payload.technology || "Geral", payload.level || "Aberto"],
-      createdByCurrentMentor: isMentor || Boolean(editingGroup?.createdByCurrentMentor),
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const data = await groupService.listGroups({ technology, level, availability });
+      setGroups((Array.isArray(data) ? data : []).map(groupService.normalizeGroup));
+    } catch (err) {
+      setError(groupService.getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [technology, level, availability]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function load() {
+      if (!active) return;
+      await refresh();
+    }
+
+    load();
+
+    return () => {
+      active = false;
     };
+  }, [refresh]);
 
-    setGroups((currentGroups) => {
-      if (!payload.originalTitle) {
-        return [savedGroup, ...currentGroups];
-      }
+  async function runAction(action, successText) {
+    setActionLoading(true);
+    setActionError('');
+    setSuccessMessage('');
 
-      return currentGroups.map((group) => (group.title === payload.originalTitle ? savedGroup : group));
-    });
+    try {
+      const result = await action();
+      await refresh();
+      if (successText) setSuccessMessage(successText);
+      return result;
+    } catch (err) {
+      setActionError(groupService.getErrorMessage(err));
+      throw err;
+    } finally {
+      setActionLoading(false);
+    }
   }
 
-  function deleteGroup(groupTitle) {
-    setGroups((currentGroups) => currentGroups.filter((group) => group.title !== groupTitle));
+  function createGroup(payload) {
+    return runAction(() => groupService.createGroup(payload), 'Grupo criado com sucesso.');
   }
 
-  return { groups, saveGroup, deleteGroup };
+  function updateGroup(id, payload) {
+    return runAction(() => groupService.updateGroup(id, payload), 'Grupo atualizado com sucesso.');
+  }
+
+  function deleteGroup(id) {
+    return runAction(() => groupService.deleteGroup(id), 'Grupo removido com sucesso.');
+  }
+
+  function joinGroup(groupId) {
+    return runAction(() => groupService.joinGroup(groupId), 'Solicitação de entrada enviada com sucesso.');
+  }
+
+  function leaveGroup(groupId) {
+    return runAction(() => groupService.leaveGroup(groupId), 'Você saiu do grupo.');
+  }
+
+  return {
+    groups,
+    loading,
+    error,
+    actionLoading,
+    actionError,
+    successMessage,
+    refresh,
+    createGroup,
+    updateGroup,
+    deleteGroup,
+    joinGroup,
+    leaveGroup,
+  };
 }
