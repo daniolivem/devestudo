@@ -141,7 +141,9 @@ const swaggerDefinition = {
                     description: { type: 'string' },
                     technology: { type: 'string', example: 'JavaScript' },
                     level: { type: 'string', enum: ['Iniciante', 'Intermediário', 'Avançado'] },
+                    availability: { type: 'string', example: 'Seg-Sex noite' },
                     materialsUrl: { type: 'string', format: 'uri' },
+                    status: { type: 'string', enum: ['ACTIVE', 'CLOSED'] },
                 },
             },
             GroupParticipation: {
@@ -161,7 +163,10 @@ const swaggerDefinition = {
             MentorshipRequest: {
                 type: 'object',
                 required: ['mentorId'],
-                properties: { mentorId: { type: 'string' } },
+                properties: {
+                    mentorId: { type: 'string' },
+                    message: { type: 'string', maxLength: 500 },
+                },
             },
             MentorshipStatus: {
                 type: 'object',
@@ -175,7 +180,26 @@ const swaggerDefinition = {
                 required: ['rating'],
                 properties: {
                     rating: { type: 'integer', minimum: 1, maximum: 5 },
-                    comment: { type: 'string', maxLength: 50 },
+                    comment: { type: 'string', maxLength: 255 },
+                },
+            },
+            AdminUserInput: {
+                type: 'object',
+                required: ['name', 'email', 'password', 'role'],
+                properties: {
+                    name: { type: 'string' },
+                    email: { type: 'string', format: 'email' },
+                    password: { type: 'string', minLength: 8 },
+                    role: { type: 'string', enum: ['STUDENT', 'MENTOR', 'ADMIN'] },
+                },
+            },
+            AdminUserUpdate: {
+                type: 'object',
+                properties: {
+                    name: { type: 'string' },
+                    email: { type: 'string', format: 'email' },
+                    role: { type: 'string', enum: ['STUDENT', 'MENTOR', 'ADMIN'] },
+                    isBlocked: { type: 'boolean' },
                 },
             },
             Category: {

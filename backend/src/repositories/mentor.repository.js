@@ -4,23 +4,34 @@ export function findAllMentors(technology) {
     return prisma.user.findMany({
         where: {
             role: 'MENTOR',
+            isBlocked: false,
             ...(technology && {
                 mentorTechnologies: {
-                has: technology
-                }
-            })    
+                    has: technology,
+                },
+            }),
         },
         select: {
             id: true,
             name: true,
+            email: true,
             role: true,
             photo: true,
             socialNetwork: true,
             knowledgeLevel: true,
             availability: true,
             mentorTechnologies: true,
-            calendlyUrl: true
-        }
+            calendlyUrl: true,
+            mentorSessions: {
+                select: {
+                    status: true,
+                    rating: true,
+                },
+            },
+        },
+        orderBy: {
+            name: 'asc',
+        },
     });
 }
 

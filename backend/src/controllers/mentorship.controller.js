@@ -1,5 +1,6 @@
 import {
     createMentorshipRequestService,
+    evaluateMentorshipFromBodyService,
     evaluateMentorshipService,
     listMentorshipsService,
     updateMentorshipStatusService,
@@ -16,9 +17,14 @@ export async function getMentorships(req, res, next) {
 
 export async function createMentorshipRequest(req, res, next) {
     try {
-        const mentorship = await createMentorshipRequestService(req.user.id, req.body.mentorId);
+        const mentorship = await createMentorshipRequestService(
+            req.user.id,
+            req.body.mentorId,
+            req.body.message
+        );
 
         return res.status(201).json({
+            success: true,
             message: 'Solicitação de mentoria criada com sucesso',
             mentorship,
         });
@@ -36,6 +42,7 @@ export async function updateMentorshipStatus(req, res, next) {
         );
 
         return res.status(200).json({
+            success: true,
             message: 'Status da mentoria atualizado com sucesso',
             mentorship,
         });
@@ -53,6 +60,25 @@ export async function evaluateMentorship(req, res, next) {
         );
 
         return res.status(200).json({
+            success: true,
+            message: 'Mentoria avaliada com sucesso',
+            mentorship,
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+// Compatibilidade com o checklist da Sprint 4: POST /api/mentorias/avaliar
+export async function evaluateMentorshipFromBody(req, res, next) {
+    try {
+        const mentorship = await evaluateMentorshipFromBodyService(
+            req.user.id,
+            req.body
+        );
+
+        return res.status(200).json({
+            success: true,
             message: 'Mentoria avaliada com sucesso',
             mentorship,
         });

@@ -37,8 +37,8 @@ export function validateMentorshipRating({ rating, comment }) {
         throw error;
     }
 
-    if (typeof comment === 'string' && comment.trim().length > 50) {
-        const error = new Error('O comentário deve ter no máximo 50 caracteres');
+    if (typeof comment === 'string' && comment.trim().length > 255) {
+        const error = new Error('O comentário deve ter no máximo 255 caracteres');
         error.statusCode = 400;
         throw error;
     }

@@ -5,7 +5,7 @@ import { createReplyFromBody, voteFromBody } from '../controllers/thread.control
 
 const router = Router();
 
-router.use(forumAuthMiddleware, authorizeRoles('STUDENT', 'MENTOR', 'ADMIN'));
+const authAndRoles = [forumAuthMiddleware, authorizeRoles('STUDENT', 'MENTOR', 'ADMIN')];
 
 /**
  * @swagger
@@ -34,7 +34,7 @@ router.use(forumAuthMiddleware, authorizeRoles('STUDENT', 'MENTOR', 'ADMIN'));
  *       401: { description: Token ausente ou inválido }
  *       404: { description: Tópico não encontrado }
  */
-router.post('/reply', createReplyFromBody);
+router.post('/reply', ...authAndRoles, createReplyFromBody);
 
 /**
  * @swagger
@@ -65,6 +65,6 @@ router.post('/reply', createReplyFromBody);
  *       401: { description: Token ausente ou inválido }
  *       404: { description: Tópico ou resposta não encontrado }
  */
-router.post('/vote', voteFromBody);
+router.post('/vote', ...authAndRoles, voteFromBody);
 
 export default router;

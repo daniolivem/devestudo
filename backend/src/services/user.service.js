@@ -3,8 +3,13 @@ import {
     findUserById, 
     updateUserProfile, 
     findUserPasswordById,
-    updatePassword 
+    updatePassword,
+    createUserByAdmin,
+    updateUserByAdmin,
+    deleteUserByAdmin
  } from "../repositories/user.repository.js";
+
+import { findUserByEmail } from "../repositories/auth.repository.js";
 
 import { 
     KNOWLEDGE_LEVELS,
@@ -13,6 +18,25 @@ import {
 } from "../constants/profile.constants.js";
 
 import bcrypt from 'bcrypt';
+
+const VALID_ROLES = ['STUDENT', 'MENTOR', 'ADMIN'];
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const fail = (message, statusCode) => Object.assign(new Error(message), { statusCode });
+
+function validatePassword(password) {
+    if (typeof password !== 'string' || password.length < 8) {
+        throw fail('A senha deve ter no mínimo 8 caracteres', 400);
+    }
+
+    if (!/\d/.test(password)) {
+        throw fail('A senha deve conter pelo menos um número', 400);
+    }
+
+    if (/\s/.test(password)) {
+        throw fail('A senha não deve conter espaços', 400);
+    }
+}
 
 
 export function getAllUsersService() {
@@ -225,4 +249,115 @@ export async function changePasswordService(userId, currentPassword, newPassword
     return {
         message: 'Senha alterada com sucesso'
     };
+}
+
+export async function createUserByAdminService(payload = {}) {
+    const { name, email, password, role = 'STUDENT' } = payload;
+
+    if (!name || typeof name !== 'string' || !name.trim()) {
+        throw fail('Nome é obrigatório', 400);
+    }
+
+    if (!email || typeof email !== 'string' || !EMAIL_PATTERN.test(email.trim())) {
+        throw fail('E-mail inválido', 400);
+    }
+
+    if (!VALID_ROLES.includes(role)) {
+        throw fail('Tipo de usuário inválido', 400);
+    }
+
+    validatePassword(password);
+
+    const existing = await findUserByEmail(email.trim());
+
+    if (existing) {
+        throw fail('E-mail já cadastrado', 409);
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    return createUserByAdmin({
+        name: name.trim(),
+        email: email.trim(),
+        password: passwordHash,
+        role,
+    });
+}
+
+export async function updateUserByAdminService(actorId, userId, payload = {}) {
+    const user = await findUserById(userId);
+
+    if (!user) {
+        throw fail('Usuário não encontrado', 404);
+    }
+
+    const data = {};
+    const { name, email, role, isBlocked } = payload;
+
+    if (name !== undefined) {
+        if (typeof name !== 'string' || !name.trim()) {
+            throw fail('Nome inválido', 400);
+        }
+        data.name = name.trim();
+    }
+
+    if (email !== undefined) {
+        if (typeof email !== 'string' || !EMAIL_PATTERN.test(email.trim())) {
+            throw fail('E-mail inválido', 400);
+        }
+
+        const existing = await findUserByEmail(email.trim());
+
+        if (existing && existing.id !== userId) {
+            throw fail('E-mail já cadastrado', 409);
+        }
+
+        data.email = email.trim();
+    }
+
+    if (role !== undefined) {
+        if (!VALID_ROLES.includes(role)) {
+            throw fail('Tipo de usuário inválido', 400);
+        }
+
+        if (actorId === userId && role !== 'ADMIN') {
+            throw fail('Você não pode remover o seu próprio acesso de administrador', 400);
+        }
+
+        data.role = role;
+    }
+
+    if (isBlocked !== undefined) {
+        if (typeof isBlocked !== 'boolean') {
+            throw fail('O status de bloqueio deve ser booleano', 400);
+        }
+
+        if (actorId === userId && isBlocked) {
+            throw fail('Você não pode bloquear a própria conta', 400);
+        }
+
+        data.isBlocked = isBlocked;
+    }
+
+    if (Object.keys(data).length === 0) {
+        throw fail('Nenhum campo válido para atualização foi informado', 400);
+    }
+
+    return updateUserByAdmin(userId, data);
+}
+
+export async function deleteUserByAdminService(actorId, userId) {
+    if (actorId === userId) {
+        throw fail('Você não pode excluir a própria conta', 400);
+    }
+
+    const user = await findUserById(userId);
+
+    if (!user) {
+        throw fail('Usuário não encontrado', 404);
+    }
+
+    await deleteUserByAdmin(userId);
+
+    return { message: 'Usuário removido com sucesso' };
 }

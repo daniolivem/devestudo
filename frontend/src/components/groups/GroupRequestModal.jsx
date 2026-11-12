@@ -22,7 +22,8 @@ export default function GroupRequestModal({ group, onClose }) {
         </div>
 
         <p className="modal-message">
-          Sua solicitação foi enviada. Aguarde a aprovação de um administrador ou responsável pelo grupo.
+          Sua solicitação foi enviada com status <strong>PENDENTE</strong>. Aguarde a aprovação do mentor responsável pelo
+          grupo.
         </p>
 
         <div className="modal-actions">

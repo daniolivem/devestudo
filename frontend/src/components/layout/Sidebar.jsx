@@ -10,6 +10,7 @@ export default function Sidebar() {
   const links = [
     { to: '/dashboard', label: 'Home' },
     ...(isAdmin ? [{ to: '/users', label: 'Usuários' }] : []),
+    ...(isAdmin ? [{ to: '/categories', label: 'Categorias' }] : []),
     { to: '/forum', label: 'Fórum' },
     { to: '/groups', label: 'Grupos' },
     { to: '/mentors', label: 'Mentoria' },

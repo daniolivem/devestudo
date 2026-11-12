@@ -18,6 +18,12 @@ api.interceptors.response.use(
 
         if (serverMessage) error.message = serverMessage;
 
+        if (!error.response) {
+            error.message = 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.';
+        } else if (status >= 500 && !serverMessage) {
+            error.message = 'Erro interno do servidor. Tente novamente em instantes.';
+        }
+
         if (status === 401 && typeof window !== 'undefined') {
             localStorage.removeItem('token');
             localStorage.removeItem('user');

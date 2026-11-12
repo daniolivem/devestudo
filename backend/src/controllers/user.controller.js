@@ -2,7 +2,10 @@ import {
     getAllUsersService, 
     updateProfileService, 
     getProfileService,
-    changePasswordService
+    changePasswordService,
+    createUserByAdminService,
+    updateUserByAdminService,
+    deleteUserByAdminService
 } from '../services/user.service.js';
 
 export async function getAllUsers(req, res, next) {
@@ -72,6 +75,51 @@ export async function changePassword(req, res, next) {
         );
 
         return res.status(200).json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function createUserByAdmin(req, res, next) {
+    try {
+        const user = await createUserByAdminService(req.body);
+
+        return res.status(201).json({
+            success: true,
+            message: 'Usuário criado com sucesso',
+            user,
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function updateUserByAdmin(req, res, next) {
+    try {
+        const user = await updateUserByAdminService(
+            req.user.id,
+            req.params.id,
+            req.body
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: 'Usuário atualizado com sucesso',
+            user,
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function deleteUserByAdmin(req, res, next) {
+    try {
+        const result = await deleteUserByAdminService(
+            req.user.id,
+            req.params.id
+        );
+
+        return res.status(200).json({ success: true, ...result });
     } catch (error) {
         return next(error);
     }

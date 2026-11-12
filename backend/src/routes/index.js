@@ -9,6 +9,7 @@ import categoryRoutes from './category.routes.js';
 import threadRoutes from './thread.routes.js';
 import replyRoutes from './reply.routes.js';
 import forumCompatRoutes from './forum-compat.routes.js';
+import mentorshipCompatRoutes from './mentorship-compat.routes.js';
 
 const router = Router();
 
@@ -43,6 +44,9 @@ router.use('/groups', groupRoutes);
 
 // Mentorship routes
 router.use('/mentorships', mentorshipRoutes);
+
+// Compatibility route documented in the Sprint 4 checklist: POST /api/mentorias/avaliar
+router.use('/', mentorshipCompatRoutes);
 
 // Category routes
 router.use('/categories', categoryRoutes);

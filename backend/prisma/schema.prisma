@@ -153,6 +153,7 @@ model Group {
   description  String?
   technology   String?     @db.VarChar(50)
   level        String?     @db.VarChar(20)
+  availability String?     @db.VarChar(100)
   materialsUrl String?     @db.VarChar(255)
   status       GroupStatus @default(ACTIVE)
   createdAt    DateTime    @default(now())
@@ -187,6 +188,7 @@ model Mentorship {
   id        String           @id @default(uuid())
   status    MentorshipStatus @default(REQUESTED)
   accessUrl String?          @db.VarChar(255)
+  message   String?          @db.VarChar(500)
   rating    Int?
   comment   String?          @db.VarChar(255)
   createdAt DateTime         @default(now())

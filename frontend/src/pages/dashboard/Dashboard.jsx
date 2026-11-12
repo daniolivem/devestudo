@@ -1,229 +1,279 @@
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import Button from "../../components/ui/Button";
-import { getRoleLabel, initialUsers } from "../../services/userService";
 import { useAuthSession } from "../../hooks/useAuthSession";
+import { listGroups, normalizeGroup } from "../../services/groupService";
+import { listTopics } from "../../services/forumService";
+import { listMentors } from "../../services/mentorshipService";
+import { getErrorMessage, getRoleLabel, listUsers } from "../../services/userService";
 
-const groups = [
-  { name: "React Avançado", members: "12 membros", status: "Ativo" },
-  { name: "JavaScript Fundamentals", members: "8 membros", status: "Pendente" },
-  { name: "Node.js API Development", members: "15 membros", status: "Ativo" },
-];
-
-const topics = [
-  { title: "Como implementar hooks personalizados em React?", tags: ["React", "JavaScript"], replies: 23 },
-  { title: "Diferença entre var, let e const", tags: ["JavaScript"], replies: 45 },
-  { title: "Boas práticas com async/await", tags: ["JavaScript", "Node.js"], replies: 18 },
-  { title: "Redux vs Context API: quando usar?", tags: ["React"], replies: 31 },
-  { title: "Configurando TypeScript no Node.js", tags: ["Node.js"], replies: 12 },
-];
-
-const mentors = [
-  { name: "Ana Costa", tags: ["React", "TypeScript", "Next.js"], rating: "4.8 / 5.0" },
-  { name: "Carlos Mendes", tags: ["Node.js", "PostgreSQL", "Docker"], rating: "4.9 / 5.0" },
-  { name: "Beatriz Lima", tags: ["JavaScript", "React", "AWS"], rating: "4.7 / 5.0" },
-];
-
-const adminStats = [
-  { label: "Tópicos em Fóruns", value: "1,320" },
-  { label: "Total de Usuários", value: "8,250" },
-  { label: "Grupos Ativos", value: "540" },
-];
-
-const adminGroups = [
-  { name: "React Avançado", members: "18 membros", status: "Ativo" },
-  { name: "JavaScript Fundamentals", members: "24 membros", status: "Ativo" },
-  { name: "Node.js API Development", members: "15 membros", status: "Pendente" },
-  { name: "Python para Data Science", members: "22 membros", status: "Ativo" },
-];
-
-function AdminDashboard() {
-  const navigate = useNavigate();
-
-  return (
-    <Layout>
-      <header className="page-header">
-        <h1 className="page-title">Dashboard Administrativo</h1>
-        <p className="page-subtitle">Acompanhe usuários, grupos e fóruns da comunidade</p>
-      </header>
-
-      <div className="stats-row">
-        {adminStats.map((stat) => (
-          <article className="card stat-card" key={stat.label}>
-            <p>{stat.label}</p>
-            <strong>{stat.value}</strong>
-          </article>
-        ))}
-      </div>
-
-      <div className="dashboard-grid admin-dashboard-grid">
-        <section className="card admin-panel">
-          <div className="admin-panel-title">
-            <h2>Novos Usuários</h2>
-            <Button className="btn--small" onClick={() => navigate("/users")}>
-              Ver Todos
-            </Button>
-          </div>
-          <div className="list-divider">
-            {initialUsers.slice(0, 5).map((user) => (
-              <article className="user-row" key={user.id}>
-                <span className="avatar" />
-                <div>
-                  <p>{user.name}</p>
-                  <span className="role-pill">{getRoleLabel(user.role)}</span>
-                </div>
-                <span>Há 2 horas</span>
-              </article>
-            ))}
-          </div>
-          <div className="card admin-stats">
-            <h3>Estatísticas dos Grupos</h3>
-            <p>Grupos Ativos: <strong>540</strong></p>
-            <p>Discussões: <strong>2,430</strong></p>
-            <p>Membros Online: <strong>865</strong></p>
-          </div>
-        </section>
-
-        <section className="card admin-panel">
-          <div className="admin-panel-title">
-            <h2>Grupos</h2>
-            <Button className="btn--small" onClick={() => navigate("/groups")}>
-              Ver Todos
-            </Button>
-          </div>
-          <div className="list-divider">
-            {adminGroups.map((group) => (
-              <article className="admin-summary-row" key={group.name}>
-                <div>
-                  <p className="mini-title">{group.name}</p>
-                  <p className="mini-meta">{group.members}</p>
-                </div>
-                <span className="status-badge">{group.status}</span>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="card admin-panel">
-          <div className="admin-panel-title">
-            <h2>Fóruns</h2>
-            <Button className="btn--small" onClick={() => navigate("/forum")}>
-              Ver Todos
-            </Button>
-          </div>
-          <div className="list-divider">
-            {topics.slice(0, 4).map((topic) => (
-              <article className="admin-summary-row" key={topic.title}>
-                <div>
-                  <p className="mini-title">{topic.title}</p>
-                  <div className="chip-list" style={{ marginTop: 10 }}>
-                    {topic.tags.map((tag) => (
-                      <span className="chip" key={tag}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <p className="mini-meta">
-                  {topic.replies}
-                  <br />
-                  respostas
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-      </div>
-    </Layout>
-  );
+function EmptyState({ children }) {
+  return <p className="modal-message">{children}</p>;
 }
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user, loading } = useAuthSession();
+  const { user, loading: sessionLoading } = useAuthSession();
+  const [data, setData] = useState({ groups: [], topics: [], mentors: [], users: [], totalTopics: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (loading) return <Layout><p role="status">Validando sessão…</p></Layout>;
+  useEffect(() => {
+    if (!user) return;
+
+    let active = true;
+
+    async function loadDashboard() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const requests = [listGroups(), listTopics({ limit: 5 }), listMentors()];
+
+        if (user.role === "ADMIN") requests.push(listUsers());
+
+        const [groups, topics, mentors, users = []] = await Promise.all(requests);
+
+        if (!active) return;
+
+        setData({
+          groups: (Array.isArray(groups) ? groups : []).map(normalizeGroup),
+          topics: topics?.items || [],
+          totalTopics: topics?.total || topics?.items?.length || 0,
+          mentors,
+          users,
+        });
+      } catch (err) {
+        if (active) setError(getErrorMessage(err));
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadDashboard();
+
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  if (sessionLoading) return <Layout><p role="status">Validando sessão…</p></Layout>;
   if (!user) return <Navigate to="/" replace />;
-  if (user.role === "ADMIN") {
-    return <AdminDashboard />;
-  }
+
+  const isAdmin = user.role === "ADMIN";
+  const adminStats = [
+    { label: "Total de Usuários", value: data.users.length },
+    { label: "Grupos Ativos", value: data.groups.length },
+    { label: "Tópicos no Fórum", value: data.totalTopics },
+    { label: "Mentores", value: data.mentors.length },
+  ];
 
   return (
     <Layout>
       <header className="page-header">
-        <h1 className="page-title">Bem-vindo(a), João Silva</h1>
-        <p className="page-subtitle">Confira suas atividades e recomendações personalizadas</p>
+        <h1 className="page-title">
+          {isAdmin ? "Dashboard Administrativo" : `Bem-vindo(a), ${user.name}`}
+        </h1>
+        <p className="page-subtitle">
+          {isAdmin
+            ? "Acompanhe usuários, grupos e fóruns da comunidade"
+            : "Confira suas atividades e recomendações personalizadas"}
+        </p>
       </header>
 
-      <div className="dashboard-grid">
-        <section className="card dashboard-card">
-          <h2>Meus Grupos</h2>
-          <div className="list-divider">
-            {groups.map((group) => (
-              <article className="mini-row" key={group.name}>
-                <div>
-                  <p className="mini-title">{group.name}</p>
-                  <p className="mini-meta">{group.members}</p>
-                </div>
-                <span className="status-badge">{group.status}</span>
+      {error && <p role="alert">{error}</p>}
+      {loading && <p role="status">Carregando dados do dashboard…</p>}
+
+      {isAdmin ? (
+        <>
+          <div className="stats-row">
+            {adminStats.map((stat) => (
+              <article className="card stat-card" key={stat.label}>
+                <p>{stat.label}</p>
+                <strong>{stat.value}</strong>
               </article>
             ))}
           </div>
-          <Button className="full-button" onClick={() => navigate('/groups')}>
-            Ver todos os grupos
-          </Button>
-        </section>
 
-        <section className="card dashboard-card">
-          <h2>Fórum Hoje</h2>
-          <div className="list-divider">
-            {topics.map((topic) => (
-              <article className="forum-row" key={topic.title}>
-                <div>
-                  <p className="mini-title">{topic.title}</p>
-                  <div className="chip-list" style={{ marginTop: 10 }}>
-                    {topic.tags.map((tag) => (
-                      <span className="chip" key={tag}>
-                        {tag}
+          <div className="dashboard-grid admin-dashboard-grid">
+            <section className="card admin-panel">
+              <div className="admin-panel-title">
+                <h2>Usuários recentes</h2>
+                <Button className="btn--small" onClick={() => navigate("/users")}>
+                  Ver Todos
+                </Button>
+              </div>
+              <div className="list-divider">
+                {data.users.length === 0 ? (
+                  <EmptyState>Nenhum usuário cadastrado.</EmptyState>
+                ) : (
+                  data.users.slice(0, 5).map((item) => (
+                    <article className="user-row" key={item.id}>
+                      <span className="avatar" />
+                      <div>
+                        <p>{item.name}</p>
+                        <span className="role-pill">{getRoleLabel(item.role)}</span>
+                      </div>
+                      <span className={item.isBlocked ? "status-badge status-badge--blocked" : "status-badge"}>
+                        {item.status}
                       </span>
-                    ))}
-                  </div>
-                </div>
-                <p className="mini-meta">
-                  {topic.replies}
-                  <br />
-                  respostas
-                </p>
-              </article>
-            ))}
-          </div>
-          <Button className="full-button" onClick={() => navigate('/forum')}>
-            Ir para o Fórum
-          </Button>
-        </section>
+                    </article>
+                  ))
+                )}
+              </div>
+              <div className="card admin-stats">
+                <h3>Estatísticas da comunidade</h3>
+                <p>Mentores: <strong>{data.mentors.length}</strong></p>
+                <p>Grupos cadastrados: <strong>{data.groups.length}</strong></p>
+                <p>Tópicos no fórum: <strong>{data.totalTopics}</strong></p>
+              </div>
+            </section>
 
-        <section className="card dashboard-card">
-          <h2>Mentores Disponíveis</h2>
-          <div className="list-divider">
-            {mentors.map((mentor) => (
-              <article className="mentor-home-item" key={mentor.name}>
-                <p className="mini-title">{mentor.name}</p>
-                <div className="chip-list" style={{ marginTop: 10 }}>
-                  {mentor.tags.map((tag) => (
-                    <span className="chip" key={tag}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <p className="mentor-rating">★ {mentor.rating}</p>
-              </article>
-            ))}
+            <section className="card admin-panel">
+              <div className="admin-panel-title">
+                <h2>Grupos</h2>
+                <Button className="btn--small" onClick={() => navigate("/groups")}>
+                  Ver Todos
+                </Button>
+              </div>
+              <div className="list-divider">
+                {data.groups.length === 0 ? (
+                  <EmptyState>Nenhum grupo cadastrado.</EmptyState>
+                ) : (
+                  data.groups.slice(0, 4).map((group) => (
+                    <article className="admin-summary-row" key={group.id}>
+                      <div>
+                        <p className="mini-title">{group.title}</p>
+                        <p className="mini-meta">{group.membersCount} membros</p>
+                      </div>
+                      <span className="status-badge">{group.status === "ACTIVE" ? "Ativo" : "Encerrado"}</span>
+                    </article>
+                  ))
+                )}
+              </div>
+            </section>
+
+            <section className="card admin-panel">
+              <div className="admin-panel-title">
+                <h2>Fóruns</h2>
+                <Button className="btn--small" onClick={() => navigate("/forum")}>
+                  Ver Todos
+                </Button>
+              </div>
+              <div className="list-divider">
+                {data.topics.length === 0 ? (
+                  <EmptyState>Nenhum tópico criado.</EmptyState>
+                ) : (
+                  data.topics.slice(0, 4).map((topic) => (
+                    <article className="admin-summary-row" key={topic.id}>
+                      <div>
+                        <p className="mini-title">{topic.title}</p>
+                        <div className="chip-list" style={{ marginTop: 10 }}>
+                          {(topic.tags || []).map((tag) => (
+                            <span className="chip" key={typeof tag === "string" ? tag : tag.name}>
+                              {typeof tag === "string" ? tag : tag.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="mini-meta">
+                        {topic.repliesCount ?? 0}
+                        <br />
+                        respostas
+                      </p>
+                    </article>
+                  ))
+                )}
+              </div>
+            </section>
           </div>
-          <Button className="full-button" onClick={() => navigate('/mentors')}>
-            Ver todos os mentores
-          </Button>
-        </section>
-      </div>
+        </>
+      ) : (
+        <div className="dashboard-grid">
+          <section className="card dashboard-card">
+            <h2>Grupos disponíveis</h2>
+            <div className="list-divider">
+              {data.groups.length === 0 ? (
+                <EmptyState>Nenhum grupo disponível.</EmptyState>
+              ) : (
+                data.groups.slice(0, 5).map((group) => (
+                  <article className="mini-row" key={group.id}>
+                    <div>
+                      <p className="mini-title">{group.title}</p>
+                      <p className="mini-meta">{group.membersCount} membros</p>
+                    </div>
+                    <span className="status-badge">{group.status === "ACTIVE" ? "Ativo" : "Encerrado"}</span>
+                  </article>
+                ))
+              )}
+            </div>
+            <Button className="full-button" onClick={() => navigate("/groups")}>
+              Ver todos os grupos
+            </Button>
+          </section>
+
+          <section className="card dashboard-card">
+            <h2>Fórum Hoje</h2>
+            <div className="list-divider">
+              {data.topics.length === 0 ? (
+                <EmptyState>Nenhum tópico criado ainda.</EmptyState>
+              ) : (
+                data.topics.map((topic) => (
+                  <article className="forum-row" key={topic.id}>
+                    <div>
+                      <p className="mini-title">{topic.title}</p>
+                      <div className="chip-list" style={{ marginTop: 10 }}>
+                        {(topic.tags || []).map((tag) => (
+                          <span className="chip" key={typeof tag === "string" ? tag : tag.name}>
+                            {typeof tag === "string" ? tag : tag.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="mini-meta">
+                      {topic.repliesCount ?? 0}
+                      <br />
+                      respostas
+                    </p>
+                  </article>
+                ))
+              )}
+            </div>
+            <Button className="full-button" onClick={() => navigate("/forum")}>
+              Ir para o Fórum
+            </Button>
+          </section>
+
+          <section className="card dashboard-card">
+            <h2>Mentores Disponíveis</h2>
+            <div className="list-divider">
+              {data.mentors.length === 0 ? (
+                <EmptyState>Nenhum mentor cadastrado.</EmptyState>
+              ) : (
+                data.mentors.slice(0, 5).map((mentor) => (
+                  <article className="mentor-home-item" key={mentor.id}>
+                    <p className="mini-title">{mentor.name}</p>
+                    <div className="chip-list" style={{ marginTop: 10 }}>
+                      {mentor.tags.slice(0, 3).map((tag) => (
+                        <span className="chip" key={tag}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="mentor-rating">
+                      {mentor.hasRating ? `★ ${mentor.rating.toFixed(1)} / 5.0` : "Sem avaliações"}
+                    </p>
+                  </article>
+                ))
+              )}
+            </div>
+            <Button className="full-button" onClick={() => navigate("/mentors")}>
+              Ver todos os mentores
+            </Button>
+          </section>
+        </div>
+      )}
     </Layout>
   );
 }

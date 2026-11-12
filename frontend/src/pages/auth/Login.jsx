@@ -1,10 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import { useState } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState("");
+  const [message] = useState(location.state?.message || "");
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -27,6 +29,7 @@ export default function Login() {
         <p className="auth-subtitle">Faça login para continuar</p>
 
         <form className="auth-form" onSubmit={handleLogin}>
+          {message && <p role="status">{message}</p>}
           {error && <p role="alert">{error}</p>}
           <div className="input-group">
             <label>E-mail</label>

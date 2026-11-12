@@ -1,24 +1,67 @@
+import { useState } from "react";
 import Button from "../ui/Button";
+import { GROUP_AVAILABILITIES, GROUP_LEVELS } from "../../services/groupService";
 
-export default function GroupFormModal({ group = {}, title, subtitle, onClose, onSubmit }) {
-  function handleSubmit(e) {
+export default function GroupFormModal({ group = {}, title, subtitle, onClose, onSubmit, error = "", loading = false }) {
+  const [localError, setLocalError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e) {
     e.preventDefault();
+    setLocalError("");
+
     const formData = new FormData(e.currentTarget);
     const payload = {
-      originalTitle: String(formData.get("originalTitle") || ""),
-      title: String(formData.get("title") || "").trim(),
+      name: String(formData.get("name") || "").trim(),
       description: String(formData.get("description") || "").trim(),
       technology: String(formData.get("technology") || "").trim(),
       level: String(formData.get("level") || "").trim(),
-      time: String(formData.get("time") || "").trim(),
+      availability: String(formData.get("availability") || "").trim(),
+      materialsUrl: String(formData.get("materialsUrl") || "").trim(),
     };
 
-    if (!payload.title || !payload.description) {
+    if (!payload.name) {
+      setLocalError("Informe o nome do grupo.");
       return;
     }
 
-    onSubmit(payload);
+    if (payload.name.length < 3) {
+      setLocalError("O nome do grupo deve ter pelo menos 3 caracteres.");
+      return;
+    }
+
+    if (payload.technology.length > 50) {
+      setLocalError("A tecnologia deve ter no máximo 50 caracteres.");
+      return;
+    }
+
+    if (payload.availability.length > 100) {
+      setLocalError("A disponibilidade deve ter no máximo 100 caracteres.");
+      return;
+    }
+
+    if (payload.materialsUrl) {
+      try {
+        const url = new URL(payload.materialsUrl);
+        if (!["http:", "https:"].includes(url.protocol)) throw new Error();
+      } catch {
+        setLocalError("O link de materiais deve ser uma URL http(s) válida.");
+        return;
+      }
+    }
+
+    setSubmitting(true);
+
+    try {
+      await onSubmit(payload);
+    } catch {
+      // O erro da API é exibido pela página através da prop error.
+    } finally {
+      setSubmitting(false);
+    }
   }
+
+  const isBusy = loading || submitting;
 
   return (
     <div className="modal-backdrop" role="presentation" onClick={onClose}>
@@ -37,38 +80,76 @@ export default function GroupFormModal({ group = {}, title, subtitle, onClose, o
         </div>
 
         <form className="modal-form" onSubmit={handleSubmit}>
-          <input type="hidden" name="originalTitle" value={group.title || ""} />
-
           <div className="input-group">
-            <label>Nome</label>
-            <input name="title" defaultValue={group.title || ""} placeholder="Ex: React Hooks Avançados" />
+            <label>Nome *</label>
+            <input
+              name="name"
+              defaultValue={group.title || ""}
+              placeholder="Ex: React Hooks Avançados"
+              maxLength={120}
+              required
+            />
           </div>
 
           <div className="input-group">
             <label>Descrição</label>
-            <textarea name="description" defaultValue={group.description || ""} placeholder="Descreva o objetivo do grupo" rows="4" />
+            <textarea
+              name="description"
+              defaultValue={group.description || ""}
+              placeholder="Descreva o objetivo do grupo"
+              rows="4"
+              maxLength={500}
+            />
           </div>
 
           <div className="grid-2">
             <div className="input-group">
               <label>Tecnologia</label>
-              <input name="technology" defaultValue={group.tags?.[0] || ""} placeholder="React" />
+              <input name="technology" defaultValue={group.technology || ""} placeholder="React" maxLength={50} />
             </div>
             <div className="input-group">
               <label>Nível</label>
-              <input name="level" defaultValue={group.tags?.[1] || ""} placeholder="Intermediário" />
+              <select name="level" defaultValue={group.level || ""}>
+                <option value="">Aberto</option>
+                {GROUP_LEVELS.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          <div className="input-group">
-            <label>Disponibilidade</label>
-            <input name="time" defaultValue={group.time || ""} placeholder="Noite" />
+          <div className="grid-2">
+            <div className="input-group">
+              <label>Disponibilidade</label>
+              <input
+                name="availability"
+                list="group-availabilities"
+                defaultValue={group.availability || ""}
+                placeholder="Ex: Seg-Sex noite"
+                maxLength={100}
+              />
+              <datalist id="group-availabilities">
+                {GROUP_AVAILABILITIES.map((availability) => (
+                  <option key={availability} value={availability} />
+                ))}
+              </datalist>
+            </div>
+            <div className="input-group">
+              <label>Link de materiais</label>
+              <input name="materialsUrl" defaultValue={group.materialsUrl || ""} placeholder="https://..." maxLength={255} />
+            </div>
           </div>
 
+          {(localError || error) && <p role="alert">{localError || error}</p>}
+
           <div className="modal-actions">
-            <Button onClick={onClose}>Cancelar</Button>
-            <Button className="btn--primary" type="submit">
-              Salvar
+            <Button onClick={onClose} disabled={isBusy}>
+              Cancelar
+            </Button>
+            <Button className="btn--primary" type="submit" disabled={isBusy}>
+              {isBusy ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </form>
