@@ -1,7 +1,8 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import Button from "../../components/ui/Button";
 import { getRoleLabel, initialUsers } from "../../services/userService";
+import { useAuthSession } from "../../hooks/useAuthSession";
 
 const groups = [
   { name: "React Avançado", members: "12 membros", status: "Ativo" },
@@ -59,7 +60,7 @@ function AdminDashboard() {
         <section className="card admin-panel">
           <div className="admin-panel-title">
             <h2>Novos Usuários</h2>
-            <Button className="btn--small" onClick={() => navigate("/users?role=admin")}>
+            <Button className="btn--small" onClick={() => navigate("/users")}>
               Ver Todos
             </Button>
           </div>
@@ -86,7 +87,7 @@ function AdminDashboard() {
         <section className="card admin-panel">
           <div className="admin-panel-title">
             <h2>Grupos</h2>
-            <Button className="btn--small" onClick={() => navigate("/groups?role=admin")}>
+            <Button className="btn--small" onClick={() => navigate("/groups")}>
               Ver Todos
             </Button>
           </div>
@@ -106,7 +107,7 @@ function AdminDashboard() {
         <section className="card admin-panel">
           <div className="admin-panel-title">
             <h2>Fóruns</h2>
-            <Button className="btn--small" onClick={() => navigate("/forum?role=admin")}>
+            <Button className="btn--small" onClick={() => navigate("/forum")}>
               Ver Todos
             </Button>
           </div>
@@ -139,11 +140,11 @@ function AdminDashboard() {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get("role");
-  const roleQuery = role === "mentor" ? "?role=mentor" : "";
+  const { user, loading } = useAuthSession();
 
-  if (role === "admin") {
+  if (loading) return <Layout><p role="status">Validando sessão…</p></Layout>;
+  if (!user) return <Navigate to="/" replace />;
+  if (user.role === "ADMIN") {
     return <AdminDashboard />;
   }
 
@@ -168,7 +169,7 @@ export default function Dashboard() {
               </article>
             ))}
           </div>
-          <Button className="full-button" onClick={() => navigate(`/groups${roleQuery}`)}>
+          <Button className="full-button" onClick={() => navigate('/groups')}>
             Ver todos os grupos
           </Button>
         </section>
@@ -196,7 +197,7 @@ export default function Dashboard() {
               </article>
             ))}
           </div>
-          <Button className="full-button" onClick={() => navigate(`/forum${roleQuery}`)}>
+          <Button className="full-button" onClick={() => navigate('/forum')}>
             Ir para o Fórum
           </Button>
         </section>
@@ -218,7 +219,7 @@ export default function Dashboard() {
               </article>
             ))}
           </div>
-          <Button className="full-button" onClick={() => navigate(`/mentors${roleQuery}`)}>
+          <Button className="full-button" onClick={() => navigate('/mentors')}>
             Ver todos os mentores
           </Button>
         </section>

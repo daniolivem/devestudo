@@ -6,7 +6,7 @@ export default function ReplyCard({ reply, isAdmin, onDelete, onUpvote }) {
     <article className="card reply-card">
       <div className="reply-header">
         <div>
-          <strong>{reply.author}</strong>
+          <strong>{reply.author?.name || reply.author || 'Usuário'}</strong>
           <p className="mini-meta">{reply.time}</p>
         </div>
         <div className="reply-actions">

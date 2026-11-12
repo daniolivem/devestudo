@@ -20,7 +20,7 @@ export default function AppRoutes() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forum" element={<Forum />} />
-        <Route path="/forum/:topicSlug" element={<Topic />} />
+        <Route path="/forum/:topicId" element={<Topic />} />
         <Route path="/groups" element={<Groups />} />
         <Route path="/mentors" element={<Mentors />} />
         <Route path="/profile" element={<Profile />} />

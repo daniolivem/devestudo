@@ -6,10 +6,10 @@ export default function VoteButton({ count = 0, hasVoted = false, compact = fals
   if (hasVoted) classes.push("vote-button--voted");
 
   return (
-    <button className={classes.join(" ")} type="button" disabled={hasVoted} onClick={onClick}>
+    <button className={classes.join(" ")} type="button" aria-pressed={hasVoted} onClick={onClick}>
       ▲
       <strong>{count}</strong>
-      {hasVoted ? <span>Votado</span> : label}
+      {hasVoted ? <span>Remover voto</span> : label}
     </button>
   );
 }

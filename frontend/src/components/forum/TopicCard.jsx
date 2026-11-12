@@ -3,7 +3,7 @@ import VoteButton from "./VoteButton";
 import { formatLastInteraction } from "../../utils/forum";
 
 export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, onDelete, onUpvote }) {
-  const canManage = isAdmin || (isMentor && topic.createdByCurrentMentor);
+  const canManage = isAdmin || topic.canManage || (isMentor && topic.createdByCurrentMentor);
 
   function handleKeyboardOpen(e) {
     if (e.key === "Enter" || e.key === " ") {
@@ -17,11 +17,11 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
       <div>
         <h2 className="topic-title">{topic.title}</h2>
         <p className="topic-meta">
-          <span>por {topic.author}</span>
+          <span>por {topic.author?.name || topic.author || 'Usuário'}</span>
           <span>•</span>
           <span>Última interação {formatLastInteraction(topic.lastInteractionHours)}</span>
           <span>•</span>
-          <span>{topic.replies} respostas</span>
+          <span>{topic.repliesCount} respostas</span>
           {isMentor && topic.createdByCurrentMentor && (
             <>
               <span>•</span>
@@ -47,7 +47,7 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
           hasVoted={topic.hasVoted}
           onClick={(e) => {
             e.stopPropagation();
-            onUpvote(topic.title);
+            onUpvote(topic.id);
           }}
         />
         {canManage ? (
@@ -74,7 +74,7 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
               className="btn--small"
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(topic.title);
+                onDelete(topic.id);
               }}
             >
               Excluir
@@ -82,7 +82,7 @@ export default function TopicCard({ topic, isAdmin, isMentor, onOpen, onEdit, on
           </div>
         ) : (
           <p className="topic-replies mini-meta">
-            {topic.replies}
+            {topic.repliesCount}
             <br />
             respostas
           </p>

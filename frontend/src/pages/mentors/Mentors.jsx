@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import Button from "../../components/ui/Button";
 import Pagination from "../../components/ui/Pagination";
@@ -7,6 +7,7 @@ import MentorCard from "../../components/mentorship/MentorCard";
 import MentorshipRequestModal from "../../components/mentorship/MentorshipRequestModal";
 import StarRating from "../../components/mentorship/StarRating";
 import { useMentorships } from "../../hooks/useMentorships";
+import { useAuthSession } from "../../hooks/useAuthSession";
 import {
   initialMentorRequests,
   mentors,
@@ -377,8 +378,7 @@ function AdminMentorshipManagement() {
 }
 
 export default function Mentors() {
-  const [searchParams] = useSearchParams();
-  const role = searchParams.get("role");
+  const { user, loading } = useAuthSession();
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [requestedMentor, setRequestedMentor] = useState(null);
   const { mentorships: studentMentorships, requestMentorship } = useMentorships();
@@ -388,11 +388,13 @@ export default function Mentors() {
   const [feedbackMentor, setFeedbackMentor] = useState(mentors[0].name);
   const [feedbackRating, setFeedbackRating] = useState(5);
 
-  if (role === "admin") {
+  if (loading) return <Layout><p role="status">Validando sessão…</p></Layout>;
+  if (!user) return <Navigate to="/" replace />;
+  if (user.role === "ADMIN") {
     return <AdminMentorshipManagement />;
   }
 
-  if (role === "mentor") {
+  if (user.role === "MENTOR") {
     return <MentorStudents />;
   }
 
